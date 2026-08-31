@@ -4,6 +4,7 @@ import migration from '@/drizzle/0000_desk_state.sql?raw';
 import {
   applyCommand,
   asState,
+  backfillBundledTrackMetadata,
   ConflictError,
   initialPayload,
   InputError,
@@ -45,7 +46,11 @@ function decode(row: Row): DeskState {
     throw new Error(
       'Unsupported local data version. Restore a compatible app version; your data has not been changed.',
     );
-  return asState(payload, row.revision, row.updated_at);
+  return asState(
+    backfillBundledTrackMetadata(payload, initialCrate),
+    row.revision,
+    row.updated_at,
+  );
 }
 export async function readState(): Promise<DeskState> {
   await ensure();

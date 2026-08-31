@@ -14,11 +14,18 @@ import {
   Settings2,
   SkipForward,
   Upload,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { activeTracks, tasteMap, validateCrate } from '@/lib/domain';
+import {
+  DEFAULT_PREVIEW_VOLUME,
+  normalisePreviewVolume,
+  playerUrl,
+} from '@/lib/player';
 import type { Crate, DeskState, TasteMap, Track, Verdict } from '@/lib/types';
 
 type View = 'unheard' | 'keep' | 'later' | 'all';
@@ -52,14 +59,22 @@ function duration(seconds?: number) {
   const total = Math.round(seconds || 0);
   return total
     ? `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`
-    : '';
+    : '—';
 }
-function playerUrl(track: Track) {
-  if (track.preview?.provider === 'bandcamp')
-    return `https://bandcamp.com/EmbeddedPlayer/track=${track.preview.id}/size=large/bgcol=ffffff/linkcol=356df3/tracklist=false/artwork=small/transparent=true/`;
-  if (track.preview?.provider === 'spotify')
-    return `https://open.spotify.com/embed/track/${track.preview.id}?theme=0`;
-  return '';
+function released(value?: string) {
+  if (!value) return '—';
+  return new Date(value).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+function tempo(track: Track) {
+  if (!track.bpm) return '—';
+  return track.alternateBpm
+    ? `${track.bpm} / ${track.alternateBpm}`
+    : String(track.bpm);
 }
 
 function Earprint({
@@ -126,6 +141,9 @@ export function ListeningDesk() {
   const [lane, setLane] = useState('all');
   const [query, setQuery] = useState('');
   const [playersAllowed, setPlayersAllowed] = useState(false);
+  const [previewVolume, setPreviewVolume] = useState(DEFAULT_PREVIEW_VOLUME);
+  const [playerVolume, setPlayerVolume] = useState(DEFAULT_PREVIEW_VOLUME);
+  const volumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
   const [error, setError] = useState('');
@@ -166,6 +184,22 @@ export function ListeningDesk() {
   useEffect(() => {
     void load(true); // oxlint-disable-line react/react-compiler -- State changes occur only after the external API read resolves.
   }, [load]);
+  useEffect(
+    () => () => {
+      if (volumeTimer.current) clearTimeout(volumeTimer.current);
+    },
+    [],
+  );
+
+  const changePreviewVolume = (value: number) => {
+    const next = normalisePreviewVolume(value);
+    setPreviewVolume(next);
+    if (volumeTimer.current) clearTimeout(volumeTimer.current);
+    volumeTimer.current = setTimeout(() => {
+      setPlayerVolume(next);
+      volumeTimer.current = null;
+    }, 250);
+  };
 
   const tracks = useMemo(() => (state ? activeTracks(state) : []), [state]);
   const lanes = useMemo(
@@ -706,41 +740,118 @@ export function ListeningDesk() {
                         )}
                       </div>
                     )}
+                    <div className="dj-readout">
+                      <dl className="dj-facts" aria-label="DJ track facts">
+                        <div>
+                          <dt>BPM</dt>
+                          <dd className={!track.bpm ? 'unverified' : ''}>
+                            {tempo(track)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Key</dt>
+                          <dd className={!track.musicalKey ? 'unverified' : ''}>
+                            {track.musicalKey || '—'}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Length</dt>
+                          <dd>{duration(track.seconds)}</dd>
+                        </div>
+                      </dl>
+                      <div className="release-strip">
+                        <span>
+                          <small>Label</small>
+                          {track.label || 'Not verified'}
+                        </span>
+                        <span>
+                          <small>Released</small>
+                          {released(track.released)}
+                        </span>
+                      </div>
+                      {track.tempoNote && (
+                        <p className="tempo-note">{track.tempoNote}</p>
+                      )}
+                    </div>
                     <div className="track-facts">
                       <span>
                         {track.accessibility.replace('-', ' ').toUpperCase()}
                       </span>
-                      {track.seconds && <span>{duration(track.seconds)}</span>}
-                      {track.bpm && <span>{track.bpm} BPM</span>}
                       <span>{track.setRole}</span>
                     </div>
                   </div>
                 </div>
                 <div className="player-shell" key={track.id}>
-                  {playersAllowed && track.preview ? (
-                    <iframe
-                      key={track.id}
-                      title={`${track.title} by ${track.artist} — official ${track.preview.provider} player`}
-                      src={playerUrl(track)}
-                      height={track.preview.provider === 'spotify' ? 152 : 120}
-                      loading="eager"
-                      allow="autoplay; encrypted-media"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : track.preview ? (
-                    <button
-                      className="load-player"
-                      onClick={() => setPlayersAllowed(true)}
-                    >
-                      <Headphones size={19} /> Enable official players{' '}
-                      <span>No autoplay</span>
-                    </button>
-                  ) : (
-                    <div className="no-preview">
-                      No embedded preview available. Open the source below to
-                      listen.
+                  {track.preview?.provider === 'bandcamp' && (
+                    <div className="preview-mixer">
+                      {previewVolume === 0 ? (
+                        <VolumeX size={17} aria-hidden="true" />
+                      ) : (
+                        <Volume2 size={17} aria-hidden="true" />
+                      )}
+                      <label htmlFor={`preview-volume-${track.id}`}>
+                        Preview level
+                      </label>
+                      <input
+                        id={`preview-volume-${track.id}`}
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="5"
+                        value={previewVolume}
+                        onChange={(event) =>
+                          changePreviewVolume(Number(event.target.value))
+                        }
+                      />
+                      <output htmlFor={`preview-volume-${track.id}`}>
+                        {previewVolume}%
+                      </output>
+                      <small aria-live="polite">
+                        {previewVolume !== playerVolume
+                          ? 'Applying…'
+                          : playerVolume === 0
+                            ? 'Muted — raise the level to reload'
+                            : playersAllowed
+                              ? 'Changing level reloads the official player'
+                              : 'Starts quiet when enabled'}
+                      </small>
                     </div>
                   )}
+                  <div className="player-stage">
+                    {playersAllowed && track.preview ? (
+                      track.preview.provider === 'bandcamp' &&
+                      playerVolume === 0 ? (
+                        <div className="no-preview">
+                          Preview muted. Raise the level to reload the player.
+                        </div>
+                      ) : (
+                        <iframe
+                          key={`${track.id}-${playerVolume}`}
+                          title={`${track.title} by ${track.artist} — official ${track.preview.provider} player`}
+                          src={playerUrl(track, playerVolume)}
+                          height={
+                            track.preview.provider === 'spotify' ? 152 : 120
+                          }
+                          loading="eager"
+                          allow="autoplay; encrypted-media"
+                          referrerPolicy="no-referrer"
+                        />
+                      )
+                    ) : track.preview ? (
+                      <button
+                        className="load-player"
+                        onClick={() => setPlayersAllowed(true)}
+                      >
+                        <Headphones size={19} /> Enable official players{' '}
+                        <span>No autoplay · default 25%</span>
+                      </button>
+                    ) : (
+                      <div className="no-preview">
+                        No embedded preview available. Open the source below to
+                        listen.
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="source-row">
                   <a

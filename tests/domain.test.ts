@@ -4,6 +4,7 @@ import demo from '../data/demo-crate.json' with { type: 'json' };
 import {
   agentBrief,
   applyCommand,
+  backfillBundledTrackMetadata,
   ConflictError,
   csvCell,
   initialPayload,
@@ -23,6 +24,8 @@ void test('the bundled crate validates without mutating it', () => {
   assert.equal(crate.tracks.length, 10);
   assert.equal(crate.round, 1);
   assert.deepEqual(crate.tracks[0].genres, ['UK bass', 'techno']);
+  assert.equal(crate.tracks[0].bpm, 126);
+  assert.equal(crate.tracks[0].musicalKey, 'D minor');
   assert.equal(JSON.stringify(demo), before);
 });
 void test('recognised music sources are accepted and lookalike hosts are rejected', () => {
@@ -153,6 +156,35 @@ void test('imports retain old tracks and votes and reject identity collisions', 
     /different recording/,
   );
 });
+void test('bundled metadata backfill is identity-safe and preserves local state', () => {
+  const state = initialPayload(demo);
+  const first = state.tracks[firstTrackId];
+  delete first.bpm;
+  delete first.musicalKey;
+  delete first.label;
+  state.tracks[demo.tracks[1].id].bpm = 140;
+  state.votes[firstTrackId] = {
+    verdict: 'keep',
+    note: 'still mine',
+    tags: ['Deep kick'],
+    at: '2026-08-31T21:00:00Z',
+  };
+  const before = structuredClone(state);
+  const next = backfillBundledTrackMetadata(state, demo);
+  assert.equal(next.tracks[firstTrackId].bpm, 126);
+  assert.equal(next.tracks[firstTrackId].musicalKey, 'D minor');
+  assert.equal(next.tracks[firstTrackId].label, 'Hessle Audio');
+  assert.equal(next.tracks[demo.tracks[1].id].bpm, 140);
+  assert.deepEqual(next.votes, state.votes);
+  assert.deepEqual(state, before);
+  assert.equal(backfillBundledTrackMetadata(next, demo), next);
+
+  const collision = structuredClone(state);
+  collision.tracks[firstTrackId].title = 'Different recording';
+  const skipped = backfillBundledTrackMetadata(collision, demo);
+  assert.equal(skipped, collision);
+  assert.equal(skipped.tracks[firstTrackId].bpm, undefined);
+});
 void test('CSV cells neutralise spreadsheet formulas', () => {
   assert.equal(
     csvCell(' =WEBSERVICE("https://evil")'),
@@ -168,6 +200,8 @@ void test('CSV cells neutralise spreadsheet formulas', () => {
   });
   const csv = shortlistCsv(state);
   assert.match(csv, /Not purchased/);
+  assert.match(csv, /"126"/);
+  assert.match(csv, /"D minor"/);
   assert.ok(!csv.includes(',@SUM'));
 });
 void test('the agent brief limits authority and labels private data as untrusted evidence', () => {

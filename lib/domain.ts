@@ -73,6 +73,19 @@ function date(value: unknown): string | undefined {
     throw new InputError('Use a valid date.');
   return text;
 }
+function verifiedBpm(value: unknown, name: string): number | undefined {
+  if (value == null) return undefined;
+  if (
+    typeof value !== 'number' ||
+    !Number.isFinite(value) ||
+    value < 30 ||
+    value > 300
+  )
+    throw new InputError(
+      `${name} must be a verified number between 30 and 300.`,
+    );
+  return value;
+}
 function stringList(
   value: unknown,
   name: string,
@@ -182,20 +195,26 @@ export function validateTrack(value: unknown): Track {
     v.seconds <= 7200
   )
     track.seconds = v.seconds;
-  if (v.bpm != null) {
-    if (
-      typeof v.bpm !== 'number' ||
-      !Number.isFinite(v.bpm) ||
-      v.bpm < 30 ||
-      v.bpm > 300
-    )
-      throw new InputError('BPM must be a verified number between 30 and 300.');
-    track.bpm = v.bpm;
-  }
+  const bpm = verifiedBpm(v.bpm, 'BPM');
+  const alternateBpm = verifiedBpm(v.alternateBpm, 'Alternate BPM');
+  if (bpm != null) track.bpm = bpm;
+  if (alternateBpm != null) track.alternateBpm = alternateBpm;
   track.checkedAt = date(v.checkedAt);
   track.released = date(v.released);
-  for (const key of ['label', 'isrc', 'caution', 'suggestedBy'] as const) {
-    if (v[key]) track[key] = string(v[key], key, key === 'caution' ? 500 : 120);
+  for (const key of [
+    'label',
+    'isrc',
+    'musicalKey',
+    'tempoNote',
+    'caution',
+    'suggestedBy',
+  ] as const) {
+    if (v[key])
+      track[key] = string(
+        v[key],
+        key,
+        key === 'caution' ? 500 : key === 'tempoNote' ? 260 : 120,
+      );
   }
   if (v.price != null) {
     const price = object(v.price);
@@ -276,6 +295,43 @@ export function normaliseIdentity(value: string): string {
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]/gu, '');
+}
+
+export function backfillBundledTrackMetadata(
+  current: Payload,
+  rawCrate: unknown,
+): Payload {
+  const bundled = validateCrate(rawCrate);
+  const next = structuredClone(current);
+  let changed = false;
+  for (const source of bundled.tracks) {
+    const target = current.tracks[source.id];
+    if (
+      !target ||
+      normaliseIdentity(target.artist) !== normaliseIdentity(source.artist) ||
+      normaliseIdentity(target.title) !== normaliseIdentity(source.title)
+    )
+      continue;
+    const updates: Partial<Track> = {};
+    if (target.seconds == null && source.seconds != null)
+      updates.seconds = source.seconds;
+    if (target.bpm == null && source.bpm != null) updates.bpm = source.bpm;
+    if (target.alternateBpm == null && source.alternateBpm != null)
+      updates.alternateBpm = source.alternateBpm;
+    if (target.musicalKey == null && source.musicalKey != null)
+      updates.musicalKey = source.musicalKey;
+    if (target.tempoNote == null && source.tempoNote != null)
+      updates.tempoNote = source.tempoNote;
+    if (target.label == null && source.label != null)
+      updates.label = source.label;
+    if (target.released == null && source.released != null)
+      updates.released = source.released;
+    if (Object.keys(updates).length) {
+      Object.assign(next.tracks[source.id], updates);
+      changed = true;
+    }
+  }
+  return changed ? next : current;
 }
 
 export function applyCommand(
@@ -395,6 +451,12 @@ export function shortlistCsv(state: Payload): string {
     [
       'Artist',
       'Track / version',
+      'BPM',
+      'Alternate BPM',
+      'Key',
+      'Length seconds',
+      'Label',
+      'Released',
       'Source',
       'Observed price',
       'Currency',
@@ -412,6 +474,12 @@ export function shortlistCsv(state: Payload): string {
     rows.push([
       track.artist,
       track.title,
+      track.bpm || '',
+      track.alternateBpm || '',
+      track.musicalKey || '',
+      track.seconds || '',
+      track.label || '',
+      track.released || '',
       track.sourceUrl,
       track.price
         ? `${track.price.amount}${track.price.kind === 'minimum' ? '+' : ''}`
