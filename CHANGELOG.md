@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-09-01
+
+- Made official Bandcamp previews start at 25% and added an in-app volume slider with an explicit player-reload warning.
+- Added a compact DJ readout for BPM, alternate tempo, key, length, label, and release date, with uncertainty shown rather than guessed.
+- Included the same DJ facts in keeper CSV exports.
+- Added identity-safe bundled metadata backfill so existing local votes and imported metadata survive the richer calibration data.
+
 ## 0.2.0 — 2026-08-31
 
 - Replaced the fixed D&B-heavy queue with an ear-led ten-track calibration round.

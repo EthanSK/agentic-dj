@@ -23,6 +23,10 @@ Agentic DJ accepts a bounded JSON document. The server validates it again during
       "preview": { "provider": "bandcamp", "id": "2860825659" },
       "artwork": "https://f4.bcbits.com/img/example.jpg",
       "seconds": 382,
+      "bpm": 126,
+      "musicalKey": "D minor",
+      "label": "Hessle Audio",
+      "released": "2018-03-02",
       "sourceUrl": "https://pangaeauk.bandcamp.com/track/bone-sucka",
       "sourceName": "Bandcamp",
       "checkedAt": "2026-08-31T20:54:03.037Z",
@@ -57,13 +61,15 @@ Every track needs `artist`, `title`, `lane`, `reason`, `setRole`, `accessibility
 
 Arbitrary iframe URLs are rejected. Do not use a stream rip, file-sharing URL, unofficial upload, or a fabricated provider ID.
 
+Bandcamp previews load at a quiet default level. The in-app slider reloads the official cross-origin player at the selected level, which resets its playhead. Spotify retains its own player volume control.
+
 ## Sources, prices, and artwork
 
 Source URLs are limited to recognised HTTPS music platforms. Artwork is limited to official Bandcamp or Spotify image hosts. This prevents imported crates from becoming arbitrary trackers or phishing-link collections.
 
 A saved price must include currency, `fixed` or `minimum`, `track` or `release`, and the exact check time. Omit `price` when it cannot be verified. Never convert album pricing into a track price or claim “cheapest” from one observed store.
 
-Optional fields include `bpm`, `released`, `label`, `isrc`, `caution`, and `suggestedBy`. Add BPM, dates, labels and ISRC only when a reliable source supports them.
+Optional fields include `seconds`, `bpm`, `alternateBpm`, `musicalKey`, `tempoNote`, `released`, `label`, `isrc`, `caution`, and `suggestedBy`. `alternateBpm` is useful for half-time/double-time interpretations. Use `tempoNote` for a short, sourced uncertainty such as conflicting retailer BPMs. Add BPM, key, dates, labels and ISRC only when a reliable source supports them; omit facts that cannot be verified.
 
 ## Identity and re-imports
 

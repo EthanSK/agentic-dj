@@ -14,6 +14,9 @@ export interface Track {
   artwork?: string;
   seconds?: number;
   bpm?: number;
+  alternateBpm?: number;
+  musicalKey?: string;
+  tempoNote?: string;
   label?: string;
   released?: string;
   sourceUrl: string;
