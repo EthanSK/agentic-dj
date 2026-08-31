@@ -18,19 +18,24 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { activeTracks, validateCrate } from '@/lib/domain';
-import type { Crate, DeskState, Track, Verdict } from '@/lib/types';
+import { activeTracks, tasteMap, validateCrate } from '@/lib/domain';
+import type { Crate, DeskState, TasteMap, Track, Verdict } from '@/lib/types';
 
 type View = 'unheard' | 'keep' | 'later' | 'all';
 const emptyTags: string[] = [];
 const feedbackTags = [
   'Dopamine',
+  'Deep kick',
   'Great drums',
   'Great bass',
+  'Love the groove',
   'Warm / soulful',
   'Too commercial',
+  'Cringe / cheesy',
   'Too dark',
+  'Too fast',
   'Too repetitive',
+  'Vocals put me off',
   'Not my thing',
 ];
 
@@ -51,10 +56,67 @@ function duration(seconds?: number) {
 }
 function playerUrl(track: Track) {
   if (track.preview?.provider === 'bandcamp')
-    return `https://bandcamp.com/EmbeddedPlayer/track=${track.preview.id}/size=small/bgcol=ffffff/linkcol=356df3/transparent=true/`;
+    return `https://bandcamp.com/EmbeddedPlayer/track=${track.preview.id}/size=large/bgcol=ffffff/linkcol=356df3/tracklist=false/artwork=small/transparent=true/`;
   if (track.preview?.provider === 'spotify')
     return `https://open.spotify.com/embed/track/${track.preview.id}?theme=0`;
   return '';
+}
+
+function Earprint({
+  map,
+  complete = false,
+}: {
+  map: TasteMap;
+  complete?: boolean;
+}) {
+  if (!map.decided)
+    return (
+      <div className="earprint-empty">
+        <strong>No genre homework.</strong>
+        <p>
+          Make a few decisions. This space will show what the records you keep
+          and pass have in common.
+        </p>
+      </div>
+    );
+  return (
+    <div className="earprint-map">
+      <p className="earprint-status">
+        {complete
+          ? 'Round decoded from your answers'
+          : map.decided < 3
+            ? 'Very early clues — keep listening'
+            : 'Provisional clues from your ears'}
+      </p>
+      <div className="signal-group positive">
+        <span>More like</span>
+        <div>
+          {map.positive.length ? (
+            map.positive.map((signal) => (
+              <i key={`${signal.kind}-${signal.label}`}>{signal.label}</i>
+            ))
+          ) : (
+            <small>No positive pattern yet</small>
+          )}
+        </div>
+      </div>
+      <div className="signal-group negative">
+        <span>Less like</span>
+        <div>
+          {map.negative.length ? (
+            map.negative.map((signal) => (
+              <i key={`${signal.kind}-${signal.label}`}>{signal.label}</i>
+            ))
+          ) : (
+            <small>No negative pattern yet</small>
+          )}
+        </div>
+      </div>
+      <p className="earprint-footnote">
+        These are working clues, not permanent genre boxes.
+      </p>
+    </div>
+  );
 }
 
 export function ListeningDesk() {
@@ -120,6 +182,11 @@ export function ListeningDesk() {
     }),
     [tracks, state],
   );
+  const inferredTaste = useMemo(
+    () =>
+      state ? tasteMap(state) : { decided: 0, positive: [], negative: [] },
+    [state],
+  );
   const queue = useMemo(
     () =>
       tracks.filter((t) => {
@@ -146,7 +213,9 @@ export function ListeningDesk() {
     .reverse()
     .find((h) => !h.undone);
   const currentIndex = track ? tracks.findIndex((t) => t.id === track.id) : -1;
-  const reviewed = counts.keep + counts.pass;
+  const decided = counts.keep + counts.pass + counts.later;
+  const round = state?.crate.round || 1;
+  const roundComplete = Boolean(tracks.length && counts.unheard === 0);
 
   const command = useCallback(
     async (body: Record<string, unknown>): Promise<DeskState | null> => {
@@ -212,6 +281,13 @@ export function ListeningDesk() {
       setNotice(
         `${verdict === 'keep' ? 'Kept' : verdict === 'pass' ? 'Passed' : 'Saved for later'} ${track.title} · saved locally.`,
       );
+      if (tracks.every((candidate) => next.votes[candidate.id])) {
+        setView('unheard');
+        setLane('all');
+        setQuery('');
+        setActiveId(null);
+        return;
+      }
       const remaining = queue.filter(
         (t) =>
           t.id !== track.id &&
@@ -225,7 +301,7 @@ export function ListeningDesk() {
           null,
       );
     },
-    [track, queue, view, command, note, tags],
+    [track, tracks, queue, view, command, note, tags],
   );
 
   const undo = useCallback(async () => {
@@ -378,7 +454,7 @@ export function ListeningDesk() {
           <div className="settings-title">
             <div>
               <p className="eyebrow">MAKE IT YOURS</p>
-              <h2>Taste is a conversation.</h2>
+              <h2>You don’t need the genre name.</h2>
             </div>
             <Button
               variant="ghost"
@@ -408,7 +484,7 @@ export function ListeningDesk() {
                 onChange={(e) =>
                   setProfile({ ...profile, brief: e.target.value })
                 }
-                placeholder="Chopped jungle breaks, warm samples, playful bass…"
+                placeholder="Deep kick, proper bass, physical groove… even half-formed descriptions help."
               />
               <label className="field-label" htmlFor="taste-avoid">
                 What should we skip?
@@ -421,7 +497,7 @@ export function ListeningDesk() {
                 onChange={(e) =>
                   setProfile({ ...profile, avoid: e.target.value })
                 }
-                placeholder="Radio edits, obvious festival drops, anything too clinical…"
+                placeholder="Drum & bass by default, obvious drops, cheesy vocals, anything that feels cringe…"
               />
               <label className="field-label" htmlFor="taste-seeds">
                 Reference tracks / library notes
@@ -445,14 +521,14 @@ export function ListeningDesk() {
               </p>
             </form>
             <div className="crate-tools">
-              <h3>1. Brief your agent</h3>
+              <h3>1. Request the next ten</h3>
               <p>
-                Export your saved taste profile and decisions. Give it to your
-                preferred assistant to research the next crate. It can inspect
-                your own music exports with your permission.
+                Export every Keep, Pass, Later, feedback tag and note. The brief
+                asks your agent for exactly ten more tracks and includes the
+                provisional sound patterns this app can infer.
               </p>
-              <a className="text-action" href="/api/export?format=brief">
-                <ArrowDownToLine size={14} /> Download private agent brief
+              <a className="text-action" href="/api/export?format=next">
+                <ArrowDownToLine size={14} /> Prepare next-round request
               </a>
               <h3>2. Bring back discoveries</h3>
               <p>
@@ -527,18 +603,20 @@ export function ListeningDesk() {
         <div>
           <p className="eyebrow">
             {state
-              ? `${String(tracks.length).padStart(2, '0')} TRACKS / ${state.crate.title.toUpperCase()}`
+              ? `ROUND ${round} · ${String(tracks.length).padStart(2, '0')} TRACKS · EAR-LED CALIBRATION`
               : 'YOUR LOCAL LISTENING DESK'}
           </p>
           <h1>
-            Find your next
+            You listen.
             <br />
-            <em>“what is this?”</em>
+            <em>It learns.</em>
           </h1>
         </div>
         <p className="crate-intro">
           {state?.crate.description || 'Good records. Open ears. Your call.'}
-          <span>Listen. Trust your gut. Keep the good ones.</span>
+          <span>
+            No genre homework. Your previous answers shape the next ten.
+          </span>
         </p>
       </section>
 
@@ -564,7 +642,7 @@ export function ListeningDesk() {
               <span className="counter">
                 {track
                   ? `${String(currentIndex + 1).padStart(2, '0')} / ${tracks.length}`
-                  : `${reviewed} DECIDED`}
+                  : `${decided} DECIDED`}
               </span>
             </div>
             {track ? (
@@ -612,6 +690,22 @@ export function ListeningDesk() {
                     >
                       {track.reason}
                     </p>
+                    {(track.genres?.length || track.traits?.length) && (
+                      <div className="sound-clues">
+                        {track.genres?.length && (
+                          <div>
+                            <span>People might call it</span>
+                            <p>{track.genres.join(' · ')}</p>
+                          </div>
+                        )}
+                        {track.traits?.length && (
+                          <div>
+                            <span>Listen for</span>
+                            <p>{track.traits.join(' · ')}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <div className="track-facts">
                       <span>
                         {track.accessibility.replace('-', ' ').toUpperCase()}
@@ -628,7 +722,7 @@ export function ListeningDesk() {
                       key={track.id}
                       title={`${track.title} by ${track.artist} — official ${track.preview.provider} player`}
                       src={playerUrl(track)}
-                      height={track.preview.provider === 'spotify' ? 152 : 42}
+                      height={track.preview.provider === 'spotify' ? 152 : 120}
                       loading="eager"
                       allow="autoplay; encrypted-media"
                       referrerPolicy="no-referrer"
@@ -799,6 +893,13 @@ export function ListeningDesk() {
                     >
                       Search Juno Download ↗
                     </a>
+                    <a
+                      href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${track.artist} ${track.title}`)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Search YouTube ↗
+                    </a>
                     {playersAllowed && (
                       <button onClick={() => setPlayersAllowed(false)}>
                         Disable embedded players
@@ -815,31 +916,48 @@ export function ListeningDesk() {
               <div className="crate-finished">
                 <Disc3 size={58} strokeWidth={1} />
                 <h2>
-                  {counts.unheard === 0 ? 'That’s a crate.' : 'Pick a record.'}
+                  {roundComplete ? `Round ${round} decoded.` : 'Pick a record.'}
                 </h2>
                 <p>
-                  {counts.unheard === 0
+                  {roundComplete
                     ? `${counts.keep} keepers, ${counts.pass} passes${counts.later ? ` and ${counts.later} to revisit` : ''}. Your decisions are saved on this computer.`
                     : 'Select a track from the queue, or switch to a different view.'}
                 </p>
+                {roundComplete && (
+                  <div className="finished-earprint">
+                    <Earprint map={inferredTaste} complete />
+                  </div>
+                )}
                 <div>
-                  <Button
-                    onClick={() =>
-                      pickView(
-                        counts.unheard
-                          ? 'unheard'
-                          : counts.later
-                            ? 'later'
-                            : 'keep',
-                      )
-                    }
-                  >
-                    {counts.unheard
-                      ? 'Hear the unplayed tracks'
-                      : counts.later
-                        ? 'Revisit the maybes'
-                        : 'Review keepers'}
-                  </Button>
+                  {roundComplete ? (
+                    <a
+                      className="request-next"
+                      href="/api/export?format=next"
+                      onClick={() =>
+                        setNotice(
+                          'Private next-round request prepared. Give it to your agent, then import the returned ten tracks.',
+                        )
+                      }
+                    >
+                      <ArrowDownToLine size={18} />
+                      <span>
+                        Request 10 more from agent
+                        <small>Uses every previous answer</small>
+                      </span>
+                    </a>
+                  ) : (
+                    <Button onClick={() => pickView('unheard')}>
+                      Hear the unplayed tracks
+                    </Button>
+                  )}
+                  {roundComplete && (counts.later || counts.keep) ? (
+                    <button
+                      className="undo-link"
+                      onClick={() => pickView(counts.later ? 'later' : 'keep')}
+                    >
+                      Review {counts.later ? 'the maybes' : 'keepers'}
+                    </button>
+                  ) : null}
                   <button
                     className="undo-link"
                     onClick={() => void undo()}
@@ -848,6 +966,12 @@ export function ListeningDesk() {
                     <RotateCcw size={14} /> Undo last decision
                   </button>
                 </div>
+                {roundComplete && (
+                  <p className="agent-honesty">
+                    This downloads a private brief. The local app never sends
+                    your taste to an AI service by itself.
+                  </p>
+                )}
                 <p className="quiet-note">Nothing has been purchased.</p>
               </div>
             )}
@@ -862,22 +986,29 @@ export function ListeningDesk() {
           </section>
 
           <aside className="crate-rail" aria-label="Track queue">
-            <p className="eyebrow">YOUR CRATE</p>
+            <p className="eyebrow">ROUND {round} · YOUR TEN</p>
             <div className="rail-count">
-              {String(reviewed).padStart(2, '0')}
+              {String(decided).padStart(2, '0')}
               <span>/ {tracks.length} decided</span>
             </div>
             <progress
               className="crate-progress"
-              value={reviewed}
+              value={decided}
               max={tracks.length}
-              aria-label={`${reviewed} of ${tracks.length} tracks decided`}
+              aria-label={`${decided} of ${tracks.length} tracks decided`}
             />
             <div className="crate-stats">
               <span>{counts.keep} kept</span>
               <span>{counts.pass} passed</span>
               <span>{counts.later} later</span>
             </div>
+            <section className="earprint-card" aria-label="Inferred taste map">
+              <div className="earprint-heading">
+                <span>YOUR EARPRINT</span>
+                <small>{inferredTaste.decided} answers</small>
+              </div>
+              <Earprint map={inferredTaste} complete={roundComplete} />
+            </section>
             <fieldset className="rail-tabs" aria-label="Filter by decision">
               {(
                 [
@@ -981,11 +1112,11 @@ export function ListeningDesk() {
             </div>
             <div className="rail-note">
               <Headphones size={22} />
-              <h3>Keep the feeling. Skip the filler.</h3>
+              <h3>The next ten start here.</h3>
               <p>
-                Keeping a track builds a shortlist. Your assistant can
-                price-check it when you’re ready. It never buys anything
-                automatically.
+                Finish this round, then request ten more. The agent brief uses
+                every previous answer and asks for new evidence—not more of the
+                same genre by default.
               </p>
             </div>
           </aside>

@@ -5,22 +5,25 @@ Agentic DJ accepts a bounded JSON document. The server validates it again during
 ```json
 {
   "schemaVersion": 1,
-  "id": "my-crate-001",
-  "title": "Dopamine without the obvious bits",
-  "description": "Jungle, broken beat and colourful bass.",
+  "id": "bass-calibration-round-2",
+  "title": "Round 2: Follow the weight",
+  "description": "Ten new tests based on the previous answers.",
+  "round": 2,
   "tracks": [
     {
-      "id": "bc-349304401",
-      "artist": "Halogenix",
-      "title": "Independent",
-      "lane": "Rolling funk & colour",
+      "id": "bc-2860825659",
+      "artist": "Pangaea",
+      "title": "Bone Sucka",
+      "lane": "Kick & sub pressure",
+      "genres": ["UK bass", "techno"],
+      "traits": ["huge kick", "sub pressure", "sparse", "raw"],
       "reason": "A short original explanation of why it may fit.",
-      "setRole": "warm rolling opener",
+      "setRole": "low-end calibration",
       "accessibility": "start-here",
-      "preview": { "provider": "bandcamp", "id": "349304401" },
+      "preview": { "provider": "bandcamp", "id": "2860825659" },
       "artwork": "https://f4.bcbits.com/img/example.jpg",
-      "seconds": 315,
-      "sourceUrl": "https://halogenix.bandcamp.com/track/independent",
+      "seconds": 382,
+      "sourceUrl": "https://pangaeauk.bandcamp.com/track/bone-sucka",
       "sourceName": "Bandcamp",
       "checkedAt": "2026-08-31T20:54:03.037Z",
       "price": {
@@ -37,11 +40,13 @@ Agentic DJ accepts a bounded JSON document. The server validates it again during
 
 ## Required fields
 
-`schemaVersion` must be `1`. A crate contains 1–500 tracks. IDs are stable alphanumeric strings (hyphen and underscore are allowed), unique inside a crate, and must identify a recording/version—not merely a song composition.
+`schemaVersion` must be `1`. `round` is an optional positive integer. A crate contains 1–500 tracks, while the adaptive listening workflow normally imports exactly ten at a time. IDs are stable alphanumeric strings (hyphen and underscore are allowed), unique inside a crate, and must identify a recording/version—not merely a song composition.
 
 Every track needs `artist`, `title`, `lane`, `reason`, `setRole`, `accessibility`, `sourceUrl`, and `sourceName`. `accessibility` is `start-here`, `deeper`, or `curveball`.
 
 `reason` and `setRole` are subjective suggestions. Do not state invented audio measurements as facts.
+
+`genres` and `traits` are optional lists of up to six short labels each. Genres explain the broad musical vocabulary; traits describe audible qualities such as sub weight, kick shape, swing, vocals, darkness, or polish. Treat both as working hypotheses. They support the visible Earprint and must not pretend to be machine-measured audio analysis.
 
 ## Official previews
 

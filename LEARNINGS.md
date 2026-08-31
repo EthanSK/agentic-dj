@@ -12,3 +12,7 @@
 - Imported recording IDs may refresh metadata only when normalised artist and title still match. This prevents an old vote from attaching to a different recording.
 - Spreadsheet exports need formula neutralisation for values beginning with `=`, `+`, `-`, or `@`, including after leading whitespace.
 - Local update safety needs three distinct recoveries: refuse a dirty source tree, back up ignored private state while the server is stopped, and retain the old Git commit on a recovery branch. Do not silently reset or roll back.
+- Ten-track rounds can replace the active crate without deleting previous tracks, votes, or profile data. Keep the inferred Earprint provisional and keep raw decisions, tags, and notes as the primary evidence for future curation.
+- `later` is a completed listening decision but a neutral taste signal. Count it toward round progress without treating uncertainty as either a positive or negative preference.
+- The tenth decision must open the completed-round handoff regardless of the current queue filter. A browser-only build must download an explicit private agent brief rather than imply it contacted an AI service by itself.
+- Independent taste models are useful for identifying missing experimental axes, but their discography recall is not source evidence. Verify every named recording against an official page and the owned-library reference before it enters a round.

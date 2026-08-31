@@ -5,6 +5,8 @@ export interface Track {
   artist: string;
   title: string;
   lane: string;
+  genres?: string[];
+  traits?: string[];
   reason: string;
   setRole: string;
   accessibility: Access;
@@ -33,7 +35,18 @@ export interface Crate {
   id: string;
   title: string;
   description: string;
+  round?: number;
   tracks: Track[];
+}
+export interface TasteSignal {
+  label: string;
+  score: number;
+  kind: 'genre' | 'trait';
+}
+export interface TasteMap {
+  decided: number;
+  positive: TasteSignal[];
+  negative: TasteSignal[];
 }
 export interface Vote {
   verdict: Verdict;

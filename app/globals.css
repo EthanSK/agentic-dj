@@ -216,6 +216,28 @@ h2 {
   margin: 17px 0 15px;
   max-width: 360px;
 }
+.sound-clues {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+  margin: 0 0 17px;
+  padding-left: 13px;
+  border-left: 2px solid #b7caff;
+}
+.sound-clues span {
+  display: block;
+  margin-bottom: 4px;
+  color: #7b8b98;
+  font: 8px var(--font-mono);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+.sound-clues p {
+  margin: 0;
+  color: #36566c;
+  font-size: 10px;
+  line-height: 1.55;
+}
 .track-facts {
   display: flex;
   flex-wrap: wrap;
@@ -643,6 +665,91 @@ textarea {
   font: 9px var(--font-mono);
   color: #738693;
 }
+.earprint-card {
+  margin: 20px 0 4px;
+  padding: 15px;
+  border: 1px solid #cbd9e6;
+  border-radius: 7px;
+  background-color: #f8fbff;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 24px,
+    #e8eef5 25px
+  );
+}
+.earprint-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #d8e3ec;
+  font: 9px var(--font-mono);
+  letter-spacing: 1px;
+}
+.earprint-heading small {
+  color: #7b8b98;
+  font: inherit;
+  letter-spacing: 0;
+}
+.earprint-empty strong {
+  display: block;
+  margin: 12px 0 5px;
+  font-size: 12px;
+}
+.earprint-empty p,
+.earprint-footnote {
+  margin: 0;
+  color: #748795;
+  font-size: 9px;
+  line-height: 1.65;
+}
+.earprint-status {
+  margin: 12px 0;
+  color: #536d7e;
+  font-size: 10px;
+  font-weight: 650;
+}
+.signal-group {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 8px;
+  align-items: start;
+  margin: 10px 0;
+}
+.signal-group > span {
+  padding-top: 5px;
+  color: #748795;
+  font: 8px var(--font-mono);
+  text-transform: uppercase;
+}
+.signal-group > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.signal-group i {
+  padding: 4px 6px;
+  border: 1px solid #bed0ec;
+  border-radius: 3px;
+  background: #eef4ff;
+  color: #315fa8;
+  font-size: 8px;
+  font-style: normal;
+}
+.signal-group.negative i {
+  border-color: #e5c9c0;
+  background: #fbefeb;
+  color: #8e5447;
+}
+.signal-group small {
+  color: #93a0aa;
+  font-size: 8px;
+}
+.earprint-footnote {
+  padding-top: 9px;
+  border-top: 1px solid #d8e3ec;
+}
 .queue-search {
   display: flex;
   gap: 5px;
@@ -724,6 +831,47 @@ textarea {
   align-items: center;
   flex-direction: column;
   gap: 12px;
+}
+.crate-finished .finished-earprint {
+  display: block;
+  max-width: 480px;
+  margin: 25px auto;
+  padding: 5px 18px 15px;
+  border: 1px solid #cbd9e6;
+  border-radius: 7px;
+  background: #f8fbff;
+  text-align: left;
+}
+.request-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 280px;
+  padding: 13px 18px;
+  border-radius: 7px;
+  background: #356df3;
+  color: white;
+  text-align: left;
+  text-decoration: none;
+}
+.request-next > span {
+  display: grid;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.request-next small {
+  color: #dbe5ff;
+  font: 8px var(--font-mono);
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.agent-honesty {
+  max-width: 430px !important;
+  margin: 12px auto 0 !important;
+  color: #7b8b98 !important;
+  font-size: 9px !important;
 }
 .loading-state {
   padding: 60px 30px;
@@ -1004,6 +1152,10 @@ textarea {
   .track-facts {
     font-size: 9px;
   }
+  .sound-clues {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
   .decision {
     height: 48px;
     font-size: 12px;
@@ -1036,6 +1188,10 @@ textarea {
   }
   .load-player span {
     font-size: 8px;
+  }
+  .request-next {
+    min-width: 0;
+    width: 100%;
   }
 }
 @media (prefers-reduced-motion: reduce) {
