@@ -21,9 +21,12 @@ export async function GET(request: Request) {
     body = shortlistCsv(state);
     name = 'agentic-dj-keepers.csv';
     type = 'text/csv; charset=utf-8';
-  } else if (format === 'brief') {
+  } else if (format === 'brief' || format === 'next') {
     body = agentBrief(state);
-    name = 'agentic-dj-private-brief.md';
+    name =
+      format === 'next'
+        ? `agentic-dj-request-round-${(state.crate.round || 1) + 1}.md`
+        : 'agentic-dj-private-brief.md';
     type = 'text/markdown; charset=utf-8';
   } else if (format === 'crate') {
     body = JSON.stringify(publicCrate(state), null, 2);
@@ -48,7 +51,10 @@ export async function GET(request: Request) {
     name = 'agentic-dj-keepers.json';
     type = 'application/json';
   } else
-    return json({ error: 'Choose csv, keepers, crate, brief or backup.' }, 400);
+    return json(
+      { error: 'Choose csv, keepers, crate, brief, next or backup.' },
+      400,
+    );
   return new Response(body, {
     headers: {
       'Content-Type': type,

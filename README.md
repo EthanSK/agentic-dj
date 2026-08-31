@@ -2,9 +2,9 @@
 
 **Find good records with an agent. Decide with your ears. Buy only after you approve the shortlist.**
 
-Agentic DJ is a local listening desk for music discovery. An AI assistant can inspect music references you choose to share, research a crate, and return verified track metadata. You listen through official players and mark **Keep**, **Pass**, or **Later**. Those decisions become evidence for the next crate—not permission to spend money.
+Agentic DJ is a local listening desk for music discovery. An AI assistant can inspect music references you choose to share, research a ten-track round, and return verified track metadata. You listen through official players and mark **Keep**, **Pass**, or **Later**. The app turns those decisions into a provisional map of the genres and physical sound qualities you respond to. That evidence shapes the next ten—it is never permission to spend money.
 
-This repository includes a 64-track demo crate weighted toward jungle, drum & bass, break science, soundsystem hybrids, and less-obvious club music. Every item has an official Bandcamp player and a source that was checked when the crate was assembled.
+This repository includes a ten-track calibration round spanning UK bass, garage, techno, dub, breakbeat, dancehall, and leftfield club music. It is designed for someone who can recognise the right bass, kick, groove, or feeling before they know the genre name. Every item has an official Bandcamp player and a source that was checked when the round was assembled.
 
 ## Why this exists
 
@@ -12,6 +12,7 @@ Recommendation feeds optimise for more listening. Agentic DJ optimises for a bet
 
 - Your own playlists and DJ library can be stronger taste evidence than broad popularity.
 - Keep / Pass decisions retain _why_ a record worked or failed.
+- Genre and sound-trait signals remain provisional, visible, and correctable instead of silently becoming a recommendation bubble.
 - Agents do the searching and verification; humans make the taste and spending decisions.
 - The app stores private references and decisions locally, outside Git.
 - A keeper is only a shortlist entry. There is no automatic checkout.
@@ -37,18 +38,20 @@ Agentic DJ binds only to `127.0.0.1`. Do not expose it through a tunnel or deplo
 - Use **Keep**, **Pass**, or **Later**, or the left / right / down arrow keys outside a player.
 - Add optional feedback tags and a note before deciding.
 - Press `Z`, `Command+Z`, or **Undo** to reverse the latest applicable decision.
+- After all ten decisions, choose **Request 10 more from agent**. The app downloads a private request containing every previous answer and its cautious inferred taste map.
+- Give that request to an assistant, then import the returned ten-track crate as the new active round. Earlier tracks and decisions remain local evidence.
 - Export keeper CSV or JSON for a separate price-comparison and purchase-approval step.
 
 ## Make it your own
 
-1. Open **Taste & tools**.
-2. Describe the feeling you want, what to avoid, and a few reference tracks.
-3. Save the profile locally, then download the **private agent brief**.
-4. Give that file—and only the library exports you choose—to your preferred assistant.
-5. Ask it to follow [the agent workflow](docs/agent-workflow.md) and return [crate JSON](docs/crate-format.md).
-6. Import the crate, listen, and repeat.
+1. Listen through one ten-track round. You do not need to supply a genre name first.
+2. Use optional tags such as **Dopamine**, **Deep kick**, **Great bass**, **Cringe / cheesy**, or **Vocals put me off** when a plain Keep or Pass misses the reason.
+3. Review the visible **Earprint** as a provisional explanation, not a permanent taste label.
+4. Choose **Request 10 more from agent** and give the downloaded private request—and only the library exports you choose—to your preferred assistant.
+5. Ask it to follow [the agent workflow](docs/agent-workflow.md) and return exactly ten tracks as [crate JSON](docs/crate-format.md).
+6. Import the new round, listen, and repeat. Previous decisions stay available to the next request.
 
-The agent brief contains an explicit authority boundary: research and crate generation do not authorise account changes, carts, downloads, purchases, playlist edits, or Rekordbox imports.
+The request button prepares a file; this local app does not silently contact an AI service. The agent brief contains an explicit authority boundary: research and crate generation do not authorise account changes, carts, downloads, purchases, playlist edits, or Rekordbox imports.
 
 ### Bring music references safely
 
@@ -76,7 +79,7 @@ The page does make these intentional third-party requests:
 
 Music streams are never copied, proxied, ripped, or saved by Agentic DJ.
 
-Download a private-state JSON from **Taste & tools** as an inspectable recovery snapshot. Version 0.1 does not automate restoration; for a machine move, also stop the app and preserve the complete `.agentic-dj/` folder. Those files are private—do not attach them to a public issue.
+Download a private-state JSON from **Taste & tools** as an inspectable recovery snapshot. Version 0.2 does not automate restoration; for a machine move, also stop the app and preserve the complete `.agentic-dj/` folder. Those files are private—do not attach them to a public issue.
 
 ## Updating safely
 

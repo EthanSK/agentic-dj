@@ -1,1124 +1,47 @@
 {
   "schemaVersion": 1,
-  "id": "dopamine-off-main-road-001",
-  "title": "Dopamine, off the main road",
-  "description": "64 official previews: jungle joy, intricate breaks, colourful D&B, soundsystem hybrids and a few lower-tempo detours.",
+  "id": "bass-calibration-round-1",
+  "title": "Round 1: What hits?",
+  "description": "Ten deliberately different ways to get weight from bass and kick—garage, techno, dub, breakbeat, dancehall and leftfield club. No drum-and-bass assumption. Your answers shape the next ten.",
+  "round": 1,
   "tracks": [
     {
-      "id": "bc-349304401",
-      "artist": "Halogenix",
-      "title": "Independent",
-      "lane": "Rolling funk & colour",
-      "reason": "A warm vocal lift and spring-loaded drums: immediate enough to begin with, spacious enough to hear the detail.",
-      "setRole": "warm rolling opener",
+      "id": "bc-2860825659",
+      "artist": "Pangaea",
+      "title": "Bone Sucka",
+      "lane": "Kick & sub pressure",
+      "genres": ["UK bass", "techno"],
+      "traits": ["huge kick", "sub pressure", "sparse", "raw"],
+      "reason": "A direct test of oversized low-end and a blunt kick with very little gloss.",
+      "setRole": "low-end calibration",
       "accessibility": "start-here",
       "preview": {
         "provider": "bandcamp",
-        "id": "349304401"
+        "id": "2860825659"
       },
-      "artwork": "https://f4.bcbits.com/img/a2555006190_5.jpg",
-      "seconds": 315,
-      "sourceUrl": "https://halogenix.bandcamp.com/track/independent",
+      "artwork": "https://f4.bcbits.com/img/a3977295275_5.jpg",
+      "seconds": 381.878,
+      "sourceUrl": "https://pangaeauk.bandcamp.com/track/bone-sucka",
       "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:11.388Z",
+      "checkedAt": "2026-08-31T21:43:49.388Z",
+      "isrc": "GBUMC1800001",
       "price": {
         "amount": 1.5,
         "currency": "GBP",
         "kind": "minimum",
         "scope": "track",
-        "checkedAt": "2026-08-31T21:14:11.388Z"
+        "checkedAt": "2026-08-31T21:43:49.388Z"
       },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBVPL2000037"
-    },
-    {
-      "id": "bc-771552449",
-      "artist": "Coco Bryce",
-      "title": "Lovin U",
-      "lane": "Jungle dopamine",
-      "reason": "A heart-on-sleeve soul loop over busy jungle breaks; sweetness without smoothing off the drums.",
-      "setRole": "first hands-up jungle moment",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "771552449"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3739408200_5.jpg",
-      "seconds": 308,
-      "sourceUrl": "https://myor.bandcamp.com/track/lovin-u",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:11.371Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "EUR",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:11.371Z"
-      },
-      "suggestedBy": "Agentic DJ",
+      "suggestedBy": "Agentic DJ calibration",
       "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-4081729754",
-      "artist": "Sully",
-      "title": "Swandive",
-      "lane": "Jungle dopamine",
-      "reason": "Skipping break edits and an airy centre make this a useful test of how intricate you want the first crate to get.",
-      "setRole": "modern jungle lift",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "4081729754"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3932944861_5.jpg",
-      "seconds": 391,
-      "sourceUrl": "https://sullyuk.bandcamp.com/track/swandive",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:11.736Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:11.736Z"
-      },
-      "suggestedBy": "Agentic DJ + Claude Opus",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GB3WZ2000503"
-    },
-    {
-      "id": "bc-1002232523",
-      "artist": "Coco Bryce",
-      "title": "No Sorcerer",
-      "lane": "Jungle dopamine",
-      "reason": "A fresh 2026 branch from Coco Bryce: bright breakbeat energy before going deeper into revival jungle.",
-      "setRole": "current jungle check-in",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1002232523"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0040565090_5.jpg",
-      "seconds": 202,
-      "sourceUrl": "https://myor.bandcamp.com/track/no-sorcerer",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:12.173Z",
-      "price": {
-        "amount": 2,
-        "currency": "EUR",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:12.173Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-3402881052",
-      "artist": "Tim Reaper, Kloke",
-      "title": "Juice",
-      "lane": "Jungle dopamine",
-      "reason": "Precision-cut new-school jungle with an intentionally fun, rave-facing payoff.",
-      "setRole": "modern jungle peak",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3402881052"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3929999917_5.jpg",
-      "seconds": 367,
-      "sourceUrl": "https://timreaper.bandcamp.com/track/juice",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:12.272Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:12.272Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBLZC2400025"
-    },
-    {
-      "id": "bc-1065844364",
-      "artist": "Anz",
-      "title": "Last Before Lights",
-      "lane": "UKG & tempo bridges",
-      "reason": "Kinetic breaks and hoover pressure make a clean ramp from garage tempo toward the faster records.",
-      "setRole": "tempo-ramp hinge",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1065844364"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3060381561_5.jpg",
-      "seconds": 366,
-      "sourceUrl": "https://anzdj.bandcamp.com/track/last-before-lights",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:12.462Z",
-      "price": {
-        "amount": 2,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:12.462Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBCFB2100630"
-    },
-    {
-      "id": "bc-1665482075",
-      "artist": "Skee Mask",
-      "title": "50 Euro To Break Boost",
-      "lane": "Break science",
-      "reason": "A compact Compro cut for testing the glacial, hyper-detailed end of breakbeat without committing to a long excursion.",
-      "setRole": "leftfield drum reset",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1665482075"
-      },
-      "artwork": "https://f4.bcbits.com/img/a4230057167_5.jpg",
-      "seconds": 307,
-      "sourceUrl": "https://iliantape.bandcamp.com/track/50-euro-to-break-boost",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:13.116Z",
-      "price": {
-        "amount": 1.75,
-        "currency": "EUR",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:13.116Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "DEOB61600328"
-    },
-    {
-      "id": "bc-3394691444",
-      "artist": "Special Request",
-      "title": "Lolita (Warehouse Mix)",
-      "lane": "Jungle dopamine",
-      "reason": "Raw warehouse euphoria with grit around the edges: a big-room rush that still feels underground.",
-      "setRole": "warehouse release valve",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3394691444"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0452810711_5.jpg",
-      "seconds": 456,
-      "sourceUrl": "https://special-request.bandcamp.com/track/lolita-warehouse-mix",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:13.149Z",
-      "isrc": "GBEXH1300074",
-      "price": {
-        "amount": 0.99,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:13.149Z"
-      },
-      "suggestedBy": "Agentic DJ + Claude Opus",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-2122025099",
-      "artist": "Sam Binga",
-      "title": "Pound 4 Pound ft. Redders & Rider Shafique",
-      "lane": "Soundsystem hybrids",
-      "reason": "Grime voices, dancehall pressure and broken drums make this a lively bridge rather than a genre-pure roller.",
-      "setRole": "soundsystem gear-change",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2122025099"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2498158567_5.jpg",
-      "seconds": 215,
-      "sourceUrl": "https://sambinga.bandcamp.com/track/pound-4-pound-ft-redders-rider-shafique",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:13.250Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:13.250Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBVPL1500056"
-    },
-    {
-      "id": "bc-2778319625",
-      "artist": "Djrum",
-      "title": "A Tune For Us",
-      "lane": "Break science",
-      "reason": "Piano and live-feeling percussion gradually open into vintage jungle breaks: emotional, detailed and properly physical.",
-      "setRole": "dramatic set opener",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2778319625"
-      },
-      "artwork": "https://f4.bcbits.com/img/a1040071726_5.jpg",
-      "seconds": 353,
-      "sourceUrl": "https://djrum.bandcamp.com/track/a-tune-for-us-2",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:13.925Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:13.925Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBEXH2401980"
-    },
-    {
-      "id": "bc-4250042133",
-      "artist": "Halogenix",
-      "title": "Tekina",
-      "lane": "Rolling funk & colour",
-      "reason": "A deeper Dragonforce EP cut for checking whether the first keeper was the artist or just that one hook.",
-      "setRole": "warm mid-set roller",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "4250042133"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2555006190_5.jpg",
-      "seconds": 253,
-      "sourceUrl": "https://halogenix.bandcamp.com/track/tekina",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:13.869Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:13.869Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBVPL2000038"
-    },
-    {
-      "id": "bc-2991162027",
-      "artist": "Halogenix",
-      "title": "Reminisce",
-      "lane": "Rolling funk & colour",
-      "reason": "A reflective counterweight to the harder drums, useful after a run of more abrasive records.",
-      "setRole": "late-set emotional release",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2991162027"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2555006190_5.jpg",
-      "seconds": 331,
-      "sourceUrl": "https://halogenix.bandcamp.com/track/reminisce",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:14.324Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:14.324Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBVPL2000039"
-    },
-    {
-      "id": "bc-3778966817",
-      "artist": "Sully",
-      "title": "Werk",
-      "lane": "Jungle dopamine",
-      "reason": "Tighter and more direct than Swandive, with the same modern breakbeat discipline.",
-      "setRole": "blend-friendly jungle tool",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3778966817"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3932944861_5.jpg",
-      "seconds": 288,
-      "sourceUrl": "https://sullyuk.bandcamp.com/track/werk",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:14.684Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:14.684Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GB3WZ2000501"
-    },
-    {
-      "id": "bc-2504739972",
-      "artist": "Sully",
-      "title": "Memories",
-      "lane": "Jungle dopamine",
-      "reason": "The softer landing on the Swandive EP; try it when a set needs glow without dropping the tempo.",
-      "setRole": "high-tempo breather",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2504739972"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3932944861_5.jpg",
-      "seconds": 285,
-      "sourceUrl": "https://sullyuk.bandcamp.com/track/memories",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:14.554Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:14.554Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GB3WZ2000504"
-    },
-    {
-      "id": "bc-535869991",
-      "artist": "Tim Reaper",
-      "title": "Give Me More VIP",
-      "lane": "Jungle dopamine",
-      "reason": "A bright revival-jungle workout whose long form leaves real room to mix rather than rushing to the drop.",
-      "setRole": "extended jungle blend",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "535869991"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0109262803_5.jpg",
-      "seconds": 368,
-      "sourceUrl": "https://futureretrolondon.bandcamp.com/track/give-me-more-vip",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:15.080Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:15.080Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-3431195624",
-      "artist": "Tim Reaper, Kloke",
-      "title": "Havoc",
-      "lane": "Jungle dopamine",
-      "reason": "The rowdier edge of In Full Effect, selected as a controlled test of how much rave abrasion is welcome.",
-      "setRole": "peak-time pressure test",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3431195624"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3929999917_5.jpg",
-      "seconds": 343,
-      "sourceUrl": "https://timreaper.bandcamp.com/track/havoc",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:15.391Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:15.391Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBLZC2400029"
-    },
-    {
-      "id": "bc-1895317364",
-      "artist": "Machinedrum",
-      "title": "Gunshotta",
-      "lane": "Footwork & jungle hybrids",
-      "reason": "Ragga-vocal momentum and footwork-shaped drums sit directly between modern jungle and the stranger electronic cuts.",
-      "setRole": "identity track at high tempo",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1895317364"
-      },
-      "artwork": "https://f4.bcbits.com/img/a1882528593_5.jpg",
-      "seconds": 346,
-      "sourceUrl": "https://machinedrum.bandcamp.com/track/gunshotta",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:15.290Z",
-      "price": {
-        "amount": 1.3,
-        "currency": "USD",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:15.290Z"
-      },
-      "suggestedBy": "Agentic DJ + Claude Opus",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBCFB1302607"
-    },
-    {
-      "id": "bc-3389443815",
-      "artist": "Calibre",
-      "title": "Even If",
-      "lane": "Rolling funk & colour",
-      "reason": "Soulful D&B with weight and restraint; a benchmark for warmth that does not feel like pop crossover.",
-      "setRole": "soulful reset",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3389443815"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3824887320_5.jpg",
-      "seconds": 454,
-      "sourceUrl": "https://calibre.bandcamp.com/track/even-if",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:15.717Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:15.717Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBZSD1000004"
-    },
-    {
-      "id": "bc-1504426262",
-      "artist": "Calibre",
-      "title": "Acid Hands",
-      "lane": "Rolling funk & colour",
-      "reason": "A less obvious Even If album cut that tests the dubby, patient edge of the roller lane.",
-      "setRole": "deep-room transition",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1504426262"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3824887320_5.jpg",
-      "seconds": 346,
-      "sourceUrl": "https://calibre.bandcamp.com/track/acid-hands",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:15.991Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:15.991Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBZSD1000010"
-    },
-    {
-      "id": "bc-1427629341",
-      "artist": "Calibre",
-      "title": "Mr Right On [2019 Remastered]",
-      "lane": "Rolling funk & colour",
-      "reason": "Compact rolling funk and a clean low-end idea, in the clearly labelled 2019 remaster.",
-      "setRole": "reliable connective roller",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1427629341"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3116379230_5.jpg",
-      "seconds": 320,
-      "sourceUrl": "https://calibre.bandcamp.com/track/mr-right-on-2019-remastered",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:16.043Z",
-      "isrc": "GBZSD1900002",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:16.043Z"
-      },
-      "suggestedBy": "Agentic DJ + Claude Opus",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-2445103670",
-      "artist": "Alix Perez",
-      "title": "Desanka",
-      "lane": "Rolling funk & colour",
-      "reason": "Minimal pressure with musical detail: heavy enough for a system, restrained enough to leave the next track space.",
-      "setRole": "low-slung tension builder",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2445103670"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0645945318_5.jpg",
-      "seconds": 264,
-      "sourceUrl": "https://alixperez.bandcamp.com/track/desanka",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:16.317Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:16.317Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-1324950020",
-      "artist": "Monty",
-      "title": "Vibin'",
-      "lane": "Rolling funk & colour",
-      "reason": "A relaxed collaborative roller from Hit The Lights that keeps bounce ahead of aggression.",
-      "setRole": "groove-preserving bridge",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1324950020"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3833164884_5.jpg",
-      "seconds": 287,
-      "sourceUrl": "https://monty.bandcamp.com/track/monty-visages-vibin",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:16.683Z",
-      "price": {
-        "amount": 1,
-        "currency": "EUR",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:16.683Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-661850699",
-      "artist": "Monty",
-      "title": "Meet You There (feat. Chimpo)",
-      "lane": "Soundsystem hybrids",
-      "reason": "Chimpo brings personality to Monty’s low-end framework, making this a useful vocal moment without radio polish.",
-      "setRole": "characterful vocal switch",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "661850699"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3833164884_5.jpg",
-      "seconds": 236,
-      "sourceUrl": "https://monty.bandcamp.com/track/monty-meet-you-there-feat-chimpo",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:16.868Z",
-      "price": {
-        "amount": 1,
-        "currency": "EUR",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:16.868Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-653719960",
-      "artist": "Monty",
-      "title": "Hardware (feat. PAV4N & Strategy)",
-      "lane": "Soundsystem hybrids",
-      "reason": "Rap and MC energy over the 140 side of bass music: a deliberate tempo detour, not mislabelled D&B.",
-      "setRole": "140 halftime diversion",
-      "accessibility": "curveball",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "653719960"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3833164884_5.jpg",
-      "seconds": 230,
-      "sourceUrl": "https://monty.bandcamp.com/track/monty-visages-hardware-feat-pav4n-strategy",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:16.922Z",
-      "price": {
-        "amount": 1,
-        "currency": "EUR",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:16.922Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-3443666849",
-      "artist": "Visages",
-      "title": "Lunar Eclipse Feat. Strategy",
-      "lane": "Rolling funk & colour",
-      "reason": "Sleek modern D&B with a memorable MC presence and enough negative space for the system.",
-      "setRole": "dark-room vocal anchor",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3443666849"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0855608920_5.jpg",
-      "seconds": 311,
-      "sourceUrl": "https://thevisages.bandcamp.com/track/lunar-eclipse-feat-strategy",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:17.514Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:17.514Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-3886933638",
-      "artist": "Visages",
-      "title": "Sunshine Mystery",
-      "lane": "Leftfield bass detours",
-      "reason": "The brighter, 140-facing corner of Hagakure; useful for testing a lower-tempo bass pocket between jungle runs.",
-      "setRole": "140 palette cleanser",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3886933638"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0855608920_5.jpg",
-      "seconds": 250,
-      "sourceUrl": "https://thevisages.bandcamp.com/track/sunshine-mystery",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:17.609Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:17.609Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-762153922",
-      "artist": "Sam Binga",
-      "title": "Wasted Days ft. Warrior Queen",
-      "lane": "Soundsystem hybrids",
-      "reason": "Warrior Queen over street-level drum programming: dancehall lineage with none of the festival gloss.",
-      "setRole": "vocal pressure peak",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "762153922"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2498158567_5.jpg",
-      "seconds": 215,
-      "sourceUrl": "https://sambinga.bandcamp.com/track/wasted-days-ft-warrior-queen",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:17.774Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:17.774Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBVPL1500055"
-    },
-    {
-      "id": "bc-1059238488",
-      "artist": "Sam Binga",
-      "title": "Steppin VIP ft. Chimpo, Fox & Redders",
-      "lane": "Soundsystem hybrids",
-      "reason": "A crowded, mischievous MC relay designed as a shot of personality when clean rollers start feeling polite.",
-      "setRole": "chaotic vocal injection",
-      "accessibility": "curveball",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1059238488"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2498158567_5.jpg",
-      "seconds": 168,
-      "sourceUrl": "https://sambinga.bandcamp.com/track/steppin-vip-ft-chimpo-fox-redders",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:18.313Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:18.313Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBVPL1500067"
-    },
-    {
-      "id": "bc-2897150402",
-      "artist": "Skee Mask",
-      "title": "Rev8617",
-      "lane": "Break science",
-      "reason": "Melodic propulsion and forensic drums: the most welcoming door into Compro’s colder world.",
-      "setRole": "emotional breakbeat curve",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2897150402"
-      },
-      "artwork": "https://f4.bcbits.com/img/a4230057167_5.jpg",
-      "seconds": 224,
-      "sourceUrl": "https://iliantape.bandcamp.com/track/rev8617",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:18.308Z",
-      "price": {
-        "amount": 1.75,
-        "currency": "EUR",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:18.308Z"
-      },
-      "suggestedBy": "Agentic DJ + Claude Opus",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "DEOB61600327"
-    },
-    {
-      "id": "bc-3114832530",
-      "artist": "Skee Mask",
-      "title": "Soundboy Ext.",
-      "lane": "Break science",
-      "reason": "A soundsystem-minded Compro cut for linking leftfield electronics back to the bass-focused part of the crate.",
-      "setRole": "bass-facing leftfield bridge",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3114832530"
-      },
-      "artwork": "https://f4.bcbits.com/img/a4230057167_5.jpg",
-      "seconds": 291,
-      "sourceUrl": "https://iliantape.bandcamp.com/track/soundboy-ext",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:18.675Z",
-      "price": {
-        "amount": 1.75,
-        "currency": "EUR",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:18.675Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "DEOB61600330"
-    },
-    {
-      "id": "bc-4068475737",
-      "artist": "Nia Archives",
-      "title": "Forbidden Feelingz",
-      "lane": "Jungle dopamine",
-      "reason": "A concise modern-jungle rush with a personal vocal centre; immediate, but not another generic radio edit.",
-      "setRole": "bright jungle connection",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "4068475737"
-      },
-      "artwork": "https://f4.bcbits.com/img/a1487926557_5.jpg",
-      "seconds": 166,
-      "sourceUrl": "https://niaarchives.bandcamp.com/track/forbidden-feelingz-2",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:18.975Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:18.975Z"
-      },
-      "suggestedBy": "Agentic DJ + Claude Opus",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-1312216396",
-      "artist": "Nia Archives",
-      "title": "18 & Over",
-      "lane": "Jungle dopamine",
-      "reason": "Scrappy break pressure and a sharp hook, selected as the tougher counterpoint to the sweeter Nia records already familiar.",
-      "setRole": "short-form jungle spike",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1312216396"
-      },
-      "artwork": "https://f4.bcbits.com/img/a1487926557_5.jpg",
-      "seconds": 218,
-      "sourceUrl": "https://niaarchives.bandcamp.com/track/18-over-2",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:19.094Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:19.094Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-47315417",
-      "artist": "Nia Archives",
-      "title": "Part Of Me",
-      "lane": "Jungle dopamine",
-      "reason": "A compact emotional jungle cut for testing whether the voice-and-breaks side deserves more room in a future crate.",
-      "setRole": "vocal high-tempo breather",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "47315417"
-      },
-      "artwork": "https://f4.bcbits.com/img/a1487926557_5.jpg",
-      "seconds": 129,
-      "sourceUrl": "https://niaarchives.bandcamp.com/track/part-of-me",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:19.459Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:19.459Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-4015484909",
-      "artist": "Fracture",
-      "title": "0860 (feat. Eastman)",
-      "lane": "Jungle dopamine",
-      "reason": "Pirate-radio memory turned into a DJ-friendly jungle framework, with history present but not museum-like.",
-      "setRole": "scene-setting jungle opener",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "4015484909"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0143621997_5.jpg",
-      "seconds": 360,
-      "sourceUrl": "https://fracture.bandcamp.com/track/0860-feat-eastman",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:19.847Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:19.847Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GB3WZ2200301"
-    },
-    {
-      "id": "bc-1065822613",
-      "artist": "Fracture",
-      "title": "Buzzing Crew (feat. Bluesy Gee)",
-      "lane": "Jungle dopamine",
-      "reason": "A playful phone-line and pirate-radio flavour keeps the break pressure human and slightly unruly.",
-      "setRole": "personality-led jungle lift",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1065822613"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0143621997_5.jpg",
-      "seconds": 288,
-      "sourceUrl": "https://fracture.bandcamp.com/track/buzzing-crew-feat-bluesy-gee",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:21.291Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:21.291Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GB3WZ2200302"
-    },
-    {
-      "id": "bc-2825715713",
-      "artist": "Fracture",
-      "title": "First Aid Kit",
-      "lane": "Jungle dopamine",
-      "reason": "Long-form modern jungle with room for a proper blend and a more dramatic second-half payoff.",
-      "setRole": "extended peak transition",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2825715713"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0143621997_5.jpg",
-      "seconds": 385,
-      "sourceUrl": "https://fracture.bandcamp.com/track/first-aid-kit",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:20.821Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:20.821Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GB3WZ2200305"
-    },
-    {
-      "id": "bc-1122858462",
-      "artist": "Squarepusher",
-      "title": "Tundra",
-      "lane": "Break science",
-      "reason": "Early Squarepusher where hyperactive programming still carries enough bass weight to make sense in a brave set.",
-      "setRole": "high-risk drum showcase",
-      "accessibility": "curveball",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1122858462"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0113459728_5.jpg",
-      "seconds": 475,
-      "sourceUrl": "https://squarepusher.bandcamp.com/track/tundra",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:20.985Z",
-      "price": {
-        "amount": 0.99,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:20.985Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBBPW2100085"
-    },
-    {
-      "id": "bc-2763476040",
-      "artist": "Squarepusher",
-      "title": "Theme From Ernest Borgnine",
-      "lane": "Break science",
-      "reason": "A gleefully overclocked detour for the moment you want break science to become the joke and the payoff.",
-      "setRole": "controlled-chaos curveball",
-      "accessibility": "curveball",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2763476040"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0113459728_5.jpg",
-      "seconds": 476,
-      "sourceUrl": "https://squarepusher.bandcamp.com/track/theme-from-ernest-borgnine",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:21.553Z",
-      "price": {
-        "amount": 0.99,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:21.553Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBBPW2100092"
-    },
-    {
-      "id": "bc-757481976",
-      "artist": "Squarepusher",
-      "title": "The Swifty",
-      "lane": "Break science",
-      "reason": "Jazz-bass dexterity and racing drums, selected as the groovier counterpoint to the outright Squarepusher dare.",
-      "setRole": "virtuoso groove switch",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "757481976"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0113459728_5.jpg",
-      "seconds": 320,
-      "sourceUrl": "https://squarepusher.bandcamp.com/track/the-swifty",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:21.834Z",
-      "price": {
-        "amount": 0.99,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:21.834Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBBPW2100086"
-    },
-    {
-      "id": "bc-1352215934",
-      "artist": "BAKEY",
-      "title": "Bring It Back",
-      "lane": "UKG & tempo bridges",
-      "reason": "Playful grime colour, two-step swing and a late rush of breaks make the tempo climb feel like part of the fun.",
-      "setRole": "garage-to-breaks accelerator",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1352215934"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3493605472_5.jpg",
-      "seconds": 337,
-      "sourceUrl": "https://bakeymusic.bandcamp.com/track/bring-it-back",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:22.257Z",
-      "price": {
-        "amount": 2,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:22.257Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "UKN6K2002093"
     },
     {
       "id": "bc-653154192",
       "artist": "BAKEY",
       "title": "Reduced Vision",
-      "lane": "UKG & tempo bridges",
-      "reason": "The tougher instrumental end of the EP, useful when you want the rhythmic idea without a vocal lead.",
-      "setRole": "underground garage tool",
+      "lane": "Swing & sub",
+      "reason": "A stripped, tougher garage tool: useful for finding out whether swing and low-end matter more than melody or vocals.",
+      "setRole": "swing calibration",
       "accessibility": "deeper",
       "preview": {
         "provider": "bandcamp",
@@ -1136,209 +59,111 @@
         "scope": "track",
         "checkedAt": "2026-08-31T21:14:22.368Z"
       },
-      "suggestedBy": "Agentic DJ",
+      "suggestedBy": "Agentic DJ calibration",
       "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "UKN6K2002096"
+      "isrc": "UKN6K2002096",
+      "genres": ["UK garage", "grime"],
+      "traits": ["swung drums", "sub bass", "instrumental", "tough"]
     },
     {
-      "id": "bc-67304939",
-      "artist": "Nectax",
-      "title": "Voychek",
-      "lane": "Footwork & jungle hybrids",
-      "reason": "160-BPM break pressure that sits between jungle, footwork and rave: quick, physical and not formulaic.",
-      "setRole": "160 bridge weapon",
+      "id": "bc-2699777059",
+      "artist": "Forest Drive West",
+      "title": "Dualism",
+      "lane": "Depth & space",
+      "genres": ["dub techno", "UK bass"],
+      "traits": ["deep sub", "broken drums", "hypnotic", "dark"],
+      "reason": "Cavernous sub, broken drums and lots of negative space: a test of deep rather than loud.",
+      "setRole": "depth calibration",
       "accessibility": "start-here",
       "preview": {
         "provider": "bandcamp",
-        "id": "67304939"
+        "id": "2699777059"
       },
-      "artwork": "https://f4.bcbits.com/img/a0244903205_5.jpg",
-      "seconds": 336,
-      "sourceUrl": "https://nectax.bandcamp.com/track/voychek",
+      "artwork": "https://f4.bcbits.com/img/a0346930310_5.jpg",
+      "seconds": 405.814,
+      "released": "2021-04-02",
+      "sourceUrl": "https://forestdrivewest.bandcamp.com/track/dualism",
       "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:22.557Z",
+      "checkedAt": "2026-08-31T21:43:47.881Z",
+      "isrc": "GBRYX2100292",
       "price": {
         "amount": 2,
         "currency": "GBP",
         "kind": "minimum",
         "scope": "track",
-        "checkedAt": "2026-08-31T21:14:22.557Z"
+        "checkedAt": "2026-08-31T21:43:47.881Z"
       },
-      "suggestedBy": "Agentic DJ",
+      "suggestedBy": "Agentic DJ calibration",
       "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
     },
     {
-      "id": "bc-46854785",
-      "artist": "Nectax",
-      "title": "Schematics",
-      "lane": "Footwork & jungle hybrids",
-      "reason": "Triplet re-chopping gives the 2026 Newcastle Juke Party project an unusually angular flow.",
-      "setRole": "rhythmic curveball at 160",
+      "id": "bc-1895033554",
+      "artist": "Overmono",
+      "title": "So U Kno",
+      "lane": "Polish & lift",
+      "genres": ["breakbeat", "techno"],
+      "traits": ["big bass", "euphoric", "polished", "vocal hook"],
+      "reason": "Big low-end with a bright emotional hook: deliberately included to learn whether polished euphoria feels exciting or obvious.",
+      "setRole": "polish calibration",
+      "accessibility": "start-here",
+      "preview": {
+        "provider": "bandcamp",
+        "id": "1895033554"
+      },
+      "artwork": "https://f4.bcbits.com/img/a3145025015_5.jpg",
+      "seconds": 343.506,
+      "released": "2021-06-18",
+      "sourceUrl": "https://overmono.bandcamp.com/track/so-u-kno",
+      "sourceName": "Bandcamp",
+      "checkedAt": "2026-08-31T21:43:46.778Z",
+      "isrc": "UKLTE2100202",
+      "price": {
+        "amount": 1,
+        "currency": "GBP",
+        "kind": "minimum",
+        "scope": "track",
+        "checkedAt": "2026-08-31T21:43:46.778Z"
+      },
+      "suggestedBy": "Agentic DJ calibration",
+      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
+    },
+    {
+      "id": "bc-734409129",
+      "artist": "Objekt",
+      "title": "Theme From Q",
+      "lane": "Odd groove",
+      "genres": ["electro", "leftfield techno"],
+      "traits": ["rubbery bass", "odd groove", "detailed", "playful"],
+      "reason": "A lopsided, rubbery groove with serious sub movement: a test of weirdness that still works physically.",
+      "setRole": "groove calibration",
       "accessibility": "deeper",
       "preview": {
         "provider": "bandcamp",
-        "id": "46854785"
+        "id": "734409129"
       },
-      "artwork": "https://f4.bcbits.com/img/a0784584688_5.jpg",
-      "seconds": 178,
-      "sourceUrl": "https://nectax.bandcamp.com/track/schematics",
+      "artwork": "https://f4.bcbits.com/img/a2529589664_5.jpg",
+      "seconds": 440.253,
+      "released": "2017-03-27",
+      "sourceUrl": "https://objekt.bandcamp.com/track/theme-from-q",
       "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:23.281Z",
-      "price": {
-        "amount": 2,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:23.281Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "USA2P2630131"
-    },
-    {
-      "id": "bc-1201598124",
-      "artist": "Nectax",
-      "title": "Newcastle Juke Party",
-      "lane": "Footwork & jungle hybrids",
-      "reason": "Juke vocal chops and jungle breaks in a current UK club record, selected to keep the crate looking forward.",
-      "setRole": "current 160 peak",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1201598124"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0784584688_5.jpg",
-      "seconds": 184,
-      "sourceUrl": "https://nectax.bandcamp.com/track/newcastle-juke-party",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:23.429Z",
-      "price": {
-        "amount": 2,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:23.429Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "USA2P2630134"
-    },
-    {
-      "id": "bc-3524403168",
-      "artist": "Fixate",
-      "title": "What Goes Around",
-      "lane": "Footwork & jungle hybrids",
-      "reason": "Cheeky footwork-jungle collision with obsessive drum movement: strange enough to surprise, direct enough to land.",
-      "setRole": "leftfield floor-filler",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3524403168"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2343395236_5.jpg",
-      "seconds": 335,
-      "sourceUrl": "https://fixateuk.bandcamp.com/track/fixate-what-goes-around",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:23.318Z",
+      "checkedAt": "2026-08-31T21:43:48.658Z",
       "price": {
         "amount": 1.5,
-        "currency": "GBP",
+        "currency": "EUR",
         "kind": "minimum",
         "scope": "track",
-        "checkedAt": "2026-08-31T21:14:23.318Z"
+        "checkedAt": "2026-08-31T21:43:48.658Z"
       },
-      "suggestedBy": "Agentic DJ",
+      "suggestedBy": "Agentic DJ calibration",
       "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-4223338112",
-      "artist": "Fixate",
-      "title": "The Rig Monkey",
-      "lane": "Footwork & jungle hybrids",
-      "reason": "Fixate’s restless rhythm against Skeptical’s low-end control gives the weirdness a firm dancefloor spine.",
-      "setRole": "bass-heavy break switch",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "4223338112"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2343395236_5.jpg",
-      "seconds": 251,
-      "sourceUrl": "https://fixateuk.bandcamp.com/track/fixate-skeptical-the-rig-monkey",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:24.051Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:24.051Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-3770540502",
-      "artist": "Fixate",
-      "title": "Rumours",
-      "lane": "Footwork & jungle hybrids",
-      "reason": "A jesterly What Goes Around album cut for finding out whether the off-kilter swing is becoming your lane.",
-      "setRole": "mischief injection",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3770540502"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2343395236_5.jpg",
-      "seconds": 308,
-      "sourceUrl": "https://fixateuk.bandcamp.com/track/fixate-rumours",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:24.093Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:24.093Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-1306415360",
-      "artist": "Anz",
-      "title": "Real Enough To Feel Good",
-      "lane": "UKG & tempo bridges",
-      "reason": "Sweet UKG shuffle with a genuinely upbeat centre; useful before the crate starts climbing in tempo.",
-      "setRole": "sunlit early-set bridge",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1306415360"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3060381561_5.jpg",
-      "seconds": 306,
-      "sourceUrl": "https://anzdj.bandcamp.com/track/real-enough-to-feel-good",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:24.111Z",
-      "price": {
-        "amount": 2,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:24.111Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBCFB2100628"
     },
     {
       "id": "bc-987433953",
       "artist": "Anz",
       "title": "Inna Circle",
-      "lane": "UKG & tempo bridges",
-      "reason": "A harder club workout inside All Hours, adding drive without losing Anz’s colour and sense of play.",
-      "setRole": "night-time gear change",
+      "lane": "Colour & drive",
+      "reason": "A colourful, high-energy club workout: useful for separating joyful from cheesy and fast from frantic.",
+      "setRole": "brightness calibration",
       "accessibility": "deeper",
       "preview": {
         "provider": "bandcamp",
@@ -1356,17 +181,81 @@
         "scope": "track",
         "checkedAt": "2026-08-31T21:14:24.950Z"
       },
-      "suggestedBy": "Agentic DJ",
+      "suggestedBy": "Agentic DJ calibration",
       "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBCFB2100629"
+      "isrc": "GBCFB2100629",
+      "genres": ["UK club", "garage"],
+      "traits": ["punchy kick", "colourful", "fast swing", "bright"]
+    },
+    {
+      "id": "bc-3838369352",
+      "artist": "Pearson Sound",
+      "title": "Alien Mode",
+      "lane": "Drum impact",
+      "genres": ["breakbeat", "UK bass", "rave"],
+      "traits": ["sledgehammer drums", "sub bass", "warehouse", "fast"],
+      "reason": "A warehouse-sized breakbeat and sub hit: a hard test of drum impact without turning into drum & bass.",
+      "setRole": "impact calibration",
+      "accessibility": "deeper",
+      "preview": {
+        "provider": "bandcamp",
+        "id": "3838369352"
+      },
+      "artwork": "https://f4.bcbits.com/img/a1728173475_5.jpg",
+      "seconds": 363.241,
+      "released": "2020-07-03",
+      "sourceUrl": "https://pearsonsound.bandcamp.com/track/alien-mode",
+      "sourceName": "Bandcamp",
+      "checkedAt": "2026-08-31T21:44:33.221Z",
+      "isrc": "GBUMC2000005",
+      "price": {
+        "amount": 1.5,
+        "currency": "GBP",
+        "kind": "minimum",
+        "scope": "track",
+        "checkedAt": "2026-08-31T21:44:33.221Z"
+      },
+      "suggestedBy": "Agentic DJ calibration",
+      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
+    },
+    {
+      "id": "bc-1282432133",
+      "artist": "Bicep",
+      "title": "Opal (Four Tet Remix)",
+      "lane": "Straight lift",
+      "reason": "A long, straight four-to-the-floor build with no lead vocal: tests whether the dopamine comes from lift itself, rather than broken drums or a vocal hook.",
+      "setRole": "groove and payoff calibration",
+      "accessibility": "curveball",
+      "preview": {
+        "provider": "bandcamp",
+        "id": "1282432133"
+      },
+      "artwork": "https://f4.bcbits.com/img/a0255307050_5.jpg",
+      "seconds": 494.257,
+      "released": "2018-03-07",
+      "sourceUrl": "https://bicep.bandcamp.com/track/opal-four-tet-remix-2",
+      "sourceName": "Bandcamp",
+      "checkedAt": "2026-08-31T22:20:52.522Z",
+      "isrc": "GBCFB1800028",
+      "price": {
+        "amount": 1.3,
+        "currency": "GBP",
+        "kind": "minimum",
+        "scope": "track",
+        "checkedAt": "2026-08-31T22:20:52.522Z"
+      },
+      "suggestedBy": "Agentic DJ + Opus calibration",
+      "caution": "Official Bandcamp track price observed at £1.30+. Bleep listed a £0.99 download during this check; compare format, tax and the final checkout total before buying.",
+      "genres": ["leftfield house", "electronica"],
+      "traits": ["straight kick", "long build", "instrumental", "euphoric"]
     },
     {
       "id": "bc-248141589",
       "artist": "Floating Points",
       "title": "LesAlpx (Extended)",
-      "lane": "Leftfield bass detours",
-      "reason": "Ten minutes of mutating broken-beat tension: an arrangement-led journey for a room willing to follow you.",
-      "setRole": "long-form tension arc",
+      "lane": "Kick & hypnosis",
+      "reason": "A long, patient club build with a driving kick: useful for learning whether repetition feels hypnotic or simply too long.",
+      "setRole": "hypnosis calibration",
       "accessibility": "curveball",
       "preview": {
         "provider": "bandcamp",
@@ -1385,394 +274,40 @@
         "scope": "track",
         "checkedAt": "2026-08-31T21:14:25.090Z"
       },
-      "suggestedBy": "Agentic DJ + Claude Opus",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-912943490",
-      "artist": "Pola & Bryson",
-      "title": "In Too Deep",
-      "lane": "Rolling funk & colour",
-      "reason": "A polished but still substantial roller, included as an accessible calibration point rather than the crate’s default.",
-      "setRole": "accessible D&B checkpoint",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "912943490"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2324614592_5.jpg",
-      "seconds": 239,
-      "sourceUrl": "https://polabryson.bandcamp.com/track/in-too-deep-2",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:24.926Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:24.926Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-1371744025",
-      "artist": "Pola & Bryson",
-      "title": "Wind Rises",
-      "lane": "Rolling funk & colour",
-      "reason": "A more cinematic album cut for letting the musical side stretch without reaching for a pop vocal.",
-      "setRole": "wide-screen D&B lift",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1371744025"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2324614592_5.jpg",
-      "seconds": 285,
-      "sourceUrl": "https://polabryson.bandcamp.com/track/wind-rises",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:25.588Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:25.588Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-1393906608",
-      "artist": "Pola & Bryson",
-      "title": "Anaesthetist ft. Strategy",
-      "lane": "Rolling funk & colour",
-      "reason": "Strategy’s presence puts grit back into the album’s smooth production and makes it easier to use as a set pivot.",
-      "setRole": "MC-led roller pivot",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "1393906608"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2324614592_5.jpg",
-      "seconds": 273,
-      "sourceUrl": "https://polabryson.bandcamp.com/track/anaesthetist-ft-strategy-2",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:25.743Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:25.743Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-3613921119",
-      "artist": "Break",
-      "title": "Simpler Times (Feat. Kyo)",
-      "lane": "Rolling funk & colour",
-      "reason": "Warm vocal D&B built for a long blend, chosen as a stronger song-shaped moment without going full radio.",
-      "setRole": "vocal roller release",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3613921119"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2642477051_5.jpg",
-      "seconds": 300,
-      "sourceUrl": "https://symmetryrecordings.bandcamp.com/track/simpler-times-feat-kyo",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:25.817Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:25.817Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-3860997800",
-      "artist": "Break",
-      "title": "No Idea (Feat. DLR)",
-      "lane": "Rolling funk & colour",
-      "reason": "Break and DLR lean into low-end funk and arrangement craft instead of a giant novelty drop.",
-      "setRole": "late-night rolling pressure",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3860997800"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2642477051_5.jpg",
-      "seconds": 348,
-      "sourceUrl": "https://symmetryrecordings.bandcamp.com/track/no-idea-feat-dlr",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:26.373Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:26.373Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-3863515990",
-      "artist": "Break",
-      "title": "Late Exclusive",
-      "lane": "Rolling funk & colour",
-      "reason": "A leaner Simpler Times album cut for testing how much straight rolling D&B the crate actually needs.",
-      "setRole": "functional groove connector",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3863515990"
-      },
-      "artwork": "https://f4.bcbits.com/img/a2642477051_5.jpg",
-      "seconds": 281,
-      "sourceUrl": "https://symmetryrecordings.bandcamp.com/track/late-exclusive",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:26.435Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:26.435Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-2370028033",
-      "artist": "DLR",
-      "title": "Trip Up",
-      "lane": "Rolling funk & colour",
-      "reason": "Bristol drum-and-bass mischief with a sound-design edge, useful when the warm rollers need a sharper outline.",
-      "setRole": "technical roller switch",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2370028033"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3586871033_5.jpg",
-      "seconds": 260,
-      "sourceUrl": "https://dispatchrecordings.bandcamp.com/track/trip-up",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:26.496Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:26.496Z"
-      },
-      "suggestedBy": "Agentic DJ",
+      "suggestedBy": "Agentic DJ calibration",
       "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBSJN1300326"
+      "genres": ["techno", "broken beat"],
+      "traits": ["driving kick", "long build", "hypnotic", "clean"]
     },
     {
-      "id": "bc-2557562930",
-      "artist": "DLR",
-      "title": "Pyoyb",
-      "lane": "Rolling funk & colour",
-      "reason": "Short, blunt and rhythm-first: a DJ tool that leaves space for a more melodic follow-up.",
-      "setRole": "minimal set tool",
+      "id": "bc-762153922",
+      "artist": "Sam Binga",
+      "title": "Wasted Days ft. Warrior Queen",
+      "lane": "Voice & pressure",
+      "reason": "Bass pressure and syncopated drums under a strong vocal: a test of whether voice adds character or gets in the way.",
+      "setRole": "vocal calibration",
       "accessibility": "deeper",
       "preview": {
         "provider": "bandcamp",
-        "id": "2557562930"
+        "id": "762153922"
       },
-      "artwork": "https://f4.bcbits.com/img/a3586871033_5.jpg",
-      "seconds": 256,
-      "sourceUrl": "https://dispatchrecordings.bandcamp.com/track/pyoyb-2",
+      "artwork": "https://f4.bcbits.com/img/a2498158567_5.jpg",
+      "seconds": 215,
+      "sourceUrl": "https://sambinga.bandcamp.com/track/wasted-days-ft-warrior-queen",
       "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:27.229Z",
-      "price": {
-        "amount": 1,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:27.229Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBSJN1300319"
-    },
-    {
-      "id": "bc-3541373298",
-      "artist": "Djrum",
-      "title": "Blue Violet",
-      "lane": "Break science",
-      "reason": "Fine-grained percussion, bass weight and cinematic space in one track: leftfield detail that still points at a dancefloor.",
-      "setRole": "deep breakbeat centrepiece",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "3541373298"
-      },
-      "artwork": "https://f4.bcbits.com/img/a1924727225_5.jpg",
-      "seconds": 521,
-      "sourceUrl": "https://djrum.bandcamp.com/track/blue-violet",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:27.144Z",
-      "isrc": "BEZ351800130",
+      "checkedAt": "2026-08-31T21:14:17.774Z",
       "price": {
         "amount": 1.5,
         "currency": "GBP",
         "kind": "minimum",
         "scope": "track",
-        "checkedAt": "2026-08-31T21:14:27.144Z"
+        "checkedAt": "2026-08-31T21:14:17.774Z"
       },
-      "suggestedBy": "Agentic DJ + Claude Opus",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total."
-    },
-    {
-      "id": "bc-2646768866",
-      "artist": "Djrum",
-      "title": "L'Ancienne",
-      "lane": "Leftfield bass detours",
-      "reason": "Futurist dancehall inside Djrum’s acoustic-electronic world; a deliberate route out of straight D&B.",
-      "setRole": "dancehall-shaped curveball",
-      "accessibility": "curveball",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2646768866"
-      },
-      "artwork": "https://f4.bcbits.com/img/a1040071726_5.jpg",
-      "seconds": 321,
-      "sourceUrl": "https://djrum.bandcamp.com/track/lancienne",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:27.344Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:27.344Z"
-      },
-      "suggestedBy": "Agentic DJ",
+      "suggestedBy": "Agentic DJ calibration",
       "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBEXH2401983"
-    },
-    {
-      "id": "bc-4040167558",
-      "artist": "Djrum",
-      "title": "Waxcap",
-      "lane": "Break science",
-      "reason": "A detailed 2025 album cut for hearing how far live-feeling musicianship can bend into club electronics.",
-      "setRole": "intricate late-set detour",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "4040167558"
-      },
-      "artwork": "https://f4.bcbits.com/img/a1040071726_5.jpg",
-      "seconds": 311,
-      "sourceUrl": "https://djrum.bandcamp.com/track/waxcap",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:27.766Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:27.766Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBEXH2401981"
-    },
-    {
-      "id": "bc-2731194840",
-      "artist": "Anz",
-      "title": "You Could Be (ft. George Riley)",
-      "lane": "UKG & tempo bridges",
-      "reason": "Effervescent and vocal-led, included as one bright crowd connection among the stranger instrumental choices.",
-      "setRole": "accessible opening lift",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "2731194840"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3060381561_5.jpg",
-      "seconds": 218,
-      "sourceUrl": "https://anzdj.bandcamp.com/track/you-could-be-ft-george-riley",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:28.127Z",
-      "price": {
-        "amount": 2,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:28.127Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBCFB2100627"
-    },
-    {
-      "id": "bc-738924071",
-      "artist": "Fracture",
-      "title": "Booyaka Style",
-      "lane": "Jungle dopamine",
-      "reason": "A direct pirate-radio rush when the more cerebral cuts need a simple shot of jungle joy.",
-      "setRole": "instant jungle reset",
-      "accessibility": "start-here",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "738924071"
-      },
-      "artwork": "https://f4.bcbits.com/img/a0143621997_5.jpg",
-      "seconds": 259,
-      "sourceUrl": "https://fracture.bandcamp.com/track/booyaka-style",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:28.162Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:28.162Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GB3WZ2200303"
-    },
-    {
-      "id": "bc-4122749763",
-      "artist": "Tim Reaper, Kloke",
-      "title": "Continuities",
-      "lane": "Jungle dopamine",
-      "reason": "A precise opening statement from a modern jungle album that treats the old language as living club music.",
-      "setRole": "new-school jungle opener",
-      "accessibility": "deeper",
-      "preview": {
-        "provider": "bandcamp",
-        "id": "4122749763"
-      },
-      "artwork": "https://f4.bcbits.com/img/a3929999917_5.jpg",
-      "seconds": 395,
-      "sourceUrl": "https://timreaper.bandcamp.com/track/continuities",
-      "sourceName": "Bandcamp",
-      "checkedAt": "2026-08-31T21:14:28.965Z",
-      "price": {
-        "amount": 1.5,
-        "currency": "GBP",
-        "kind": "minimum",
-        "scope": "track",
-        "checkedAt": "2026-08-31T21:14:28.965Z"
-      },
-      "suggestedBy": "Agentic DJ",
-      "caution": "Observed Bandcamp track price; not yet compared with Beatport, Juno Download or other stores. Recheck tax and the checkout total.",
-      "isrc": "GBLZC2400023"
+      "isrc": "GBVPL1500055",
+      "genres": ["dancehall", "UK bass"],
+      "traits": ["bass pressure", "syncopated drums", "vocal lead", "gritty"]
     }
   ]
 }
