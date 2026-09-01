@@ -22,16 +22,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PreviewPlayer } from '@/components/preview-player';
 import { activeTracks, tasteMap, validateCrate } from '@/lib/domain';
-import {
-  DEFAULT_PREVIEW_VOLUME,
-  normalisePreviewVolume,
-  playerUrl,
-} from '@/lib/player';
-import {
-  blockHardwareMediaKeys,
-  EMBEDDED_PLAYER_ALLOW,
-} from '@/lib/media-keys';
+import { DEFAULT_PREVIEW_VOLUME, normalisePreviewVolume } from '@/lib/player';
 import type { Crate, DeskState, TasteMap, Track, Verdict } from '@/lib/types';
 
 type View = 'unheard' | 'keep' | 'later' | 'all';
@@ -148,8 +141,6 @@ export function ListeningDesk() {
   const [query, setQuery] = useState('');
   const [playersAllowed, setPlayersAllowed] = useState(false);
   const [previewVolume, setPreviewVolume] = useState(DEFAULT_PREVIEW_VOLUME);
-  const [playerVolume, setPlayerVolume] = useState(DEFAULT_PREVIEW_VOLUME);
-  const volumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
   const [error, setError] = useState('');
@@ -190,30 +181,9 @@ export function ListeningDesk() {
   useEffect(() => {
     void load(true); // oxlint-disable-line react/react-compiler -- State changes occur only after the external API read resolves.
   }, [load]);
-  useEffect(
-    () => () => {
-      if (volumeTimer.current) clearTimeout(volumeTimer.current);
-    },
-    [],
-  );
-  useEffect(() => {
-    const shield = blockHardwareMediaKeys(navigator.mediaSession);
-    document.documentElement.dataset.mediaKeyShield =
-      shield.blockedActions.join(',') || 'unsupported';
-    return () => {
-      shield.release();
-      delete document.documentElement.dataset.mediaKeyShield;
-    };
-  }, []);
 
   const changePreviewVolume = (value: number) => {
-    const next = normalisePreviewVolume(value);
-    setPreviewVolume(next);
-    if (volumeTimer.current) clearTimeout(volumeTimer.current);
-    volumeTimer.current = setTimeout(() => {
-      setPlayerVolume(next);
-      volumeTimer.current = null;
-    }, 250);
+    setPreviewVolume(normalisePreviewVolume(value));
   };
 
   const tracks = useMemo(() => (state ? activeTracks(state) : []), [state]);
@@ -455,7 +425,7 @@ export function ListeningDesk() {
   }
 
   return (
-    <main className="desk-shell" data-media-keys="ignored">
+    <main className="desk-shell" data-preview-policy="web-audio-only">
       <header className="masthead">
         <a className="wordmark" href="/" aria-label="Agentic DJ home">
           <Disc3 size={25} strokeWidth={1.7} />
@@ -790,43 +760,50 @@ export function ListeningDesk() {
                           {previewVolume}%
                         </output>
                         <small aria-live="polite">
-                          {previewVolume !== playerVolume
-                            ? 'Applying…'
-                            : playerVolume === 0
-                              ? 'Muted — raise the level to reload'
-                              : playersAllowed
-                                ? 'Reloads the player when changed'
-                                : 'Starts quiet'}
+                          {previewVolume === 0
+                            ? 'Muted'
+                            : playersAllowed
+                              ? 'Live level'
+                              : 'Starts quiet'}
                         </small>
                       </div>
                     )}
                     <div className="player-stage">
                       {playersAllowed && track.preview ? (
-                        track.preview.provider === 'bandcamp' &&
-                        playerVolume === 0 ? (
-                          <div className="no-preview">
-                            Preview muted. Raise the volume to reload it.
-                          </div>
-                        ) : (
-                          <iframe
-                            key={`${track.id}-${playerVolume}`}
-                            title={`${track.title} by ${track.artist} — official ${track.preview.provider} player`}
-                            src={playerUrl(track, playerVolume)}
-                            height={
-                              track.preview.provider === 'spotify' ? 152 : 120
-                            }
-                            loading="eager"
-                            allow={EMBEDDED_PLAYER_ALLOW}
-                            referrerPolicy="no-referrer"
+                        track.preview.provider === 'bandcamp' ? (
+                          <PreviewPlayer
+                            key={track.id}
+                            trackId={track.preview.id}
+                            title={track.title}
+                            artist={track.artist}
+                            volume={previewVolume}
                           />
+                        ) : (
+                          <div className="no-preview">
+                            Spotify embeds take hardware media keys.{' '}
+                            <a
+                              href={`https://open.spotify.com/track/${track.preview.id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Listen on Spotify ↗
+                            </a>
+                          </div>
                         )
                       ) : track.preview ? (
                         <button
                           className="load-player"
                           onClick={() => setPlayersAllowed(true)}
                         >
-                          <Headphones size={19} /> Enable official preview
-                          <span>No autoplay · starts at 25%</span>
+                          <Headphones size={19} />
+                          {track.preview.provider === 'bandcamp'
+                            ? 'Enable official preview'
+                            : 'Show Spotify link'}
+                          <span>
+                            {track.preview.provider === 'bandcamp'
+                              ? 'No autoplay · hardware keys ignored'
+                              : 'No embedded player'}
+                          </span>
                         </button>
                       ) : (
                         <div className="no-preview">
@@ -989,7 +966,7 @@ export function ListeningDesk() {
                           </a>
                           {playersAllowed && (
                             <button onClick={() => setPlayersAllowed(false)}>
-                              Disable players
+                              Disable preview
                             </button>
                           )}
                         </div>

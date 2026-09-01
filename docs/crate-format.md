@@ -61,7 +61,7 @@ Every track needs `artist`, `title`, `lane`, `reason`, `setRole`, `accessibility
 
 Arbitrary iframe URLs are rejected. Do not use a stream rip, file-sharing URL, unofficial upload, or a fabricated provider ID.
 
-Bandcamp previews load at a quiet default level. The in-app slider reloads the official cross-origin player at the selected level, which resets its playhead. Spotify retains its own player volume control.
+Bandcamp previews load at a quiet default level through the app's Web Audio player. Its volume control is live and its scrubber does not reload the preview. Spotify IDs are shown as explicit Spotify links rather than embedded players, because cross-origin media elements can claim hardware media keys.
 
 ## Sources, prices, and artwork
 

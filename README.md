@@ -34,7 +34,8 @@ Agentic DJ binds only to `127.0.0.1`. Do not expose it through a tunnel or deplo
 
 ### Listen and decide
 
-- Set the preview level, then select **Enable official preview** once. Players never autoplay and Bandcamp previews start at 25%. The embedded preview does not claim your computer’s hardware play/pause keys.
+- Set the preview level, then select **Enable official preview** once. Previews never autoplay and start at 25%. Agentic DJ plays Bandcamp's official preview through Web Audio, so Chrome does not expose it to your computer's hardware play/pause keys.
+- Use the in-app play/pause button and scrub bar. The volume slider changes the live level without resetting the playhead.
 - Read the DJ facts beside each record: verified BPM, alternate tempo where useful, key, length, label, and release date. Missing or disputed data stays visibly marked instead of being guessed.
 - Use **Keep**, **Pass**, or **Later**, or the left / right / down arrow keys outside a player.
 - Open **Feedback** for optional tags and a note; open **Track details** for labels, release data, sound clues, store searches, and provenance.
@@ -72,15 +73,14 @@ The public `.gitignore` excludes local database files, music files, private prof
 
 Private state lives under `.agentic-dj/`. The app uses a local D1/SQLite database and does not use browser local storage, analytics, or telemetry. State mutations use a revision check, so a stale tab cannot silently overwrite a newer decision.
 
-The page does make these intentional third-party requests:
+The page makes these intentional third-party requests:
 
 - cover artwork loads from the release’s original Bandcamp or Spotify image host;
-- after you enable players, embedded previews load from Bandcamp or Spotify; and
+- after you press play, the localhost server requests official Bandcamp preview metadata and audio;
+- imported Spotify preview IDs produce an explicit Spotify link rather than an embedded player; and
 - source / store links open the named external website when you click them.
 
-Music streams are never copied, proxied, ripped, or saved by Agentic DJ.
-
-The Bandcamp level control is applied when its official cross-origin player loads. Changing it reloads that player, so the preview playhead resets. Spotify embeds retain Spotify's own volume control.
+The server validates the requested Bandcamp track ID and the returned `bcbits.com` stream address, relays the official 128 kbps preview to the same-origin page, and sends `Cache-Control: no-store`. The browser decodes it in memory for Web Audio playback. Agentic DJ does not write preview audio to disk, offer an audio download, bypass provider limits, or retain the signed stream address.
 
 Download a private-state JSON from **Tools** as an inspectable recovery snapshot. Automatic restoration is not provided; for a machine move, also stop the app and preserve the complete `.agentic-dj/` folder. Those files are private—do not attach them to a public issue.
 
