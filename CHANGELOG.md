@@ -1,10 +1,17 @@
 # Changelog
 
+## 0.3.1 — 2026-09-01
+
+- Replaced the ineffective iframe Media Session workaround with a custom Web Audio player that Chromium treats as ambient rather than hardware-key controllable.
+- Kept official Bandcamp playback, live volume, play/pause, and scrubbing while removing every `<iframe>`, `<audio>` element, and Media Session action handler from the listening path.
+- Added a local-only, memory-only Bandcamp preview relay with strict track-ID, host, path, response-size, and same-origin validation.
+- Changed imported Spotify previews to explicit Spotify links because their embedded player can claim hardware media keys.
+
 ## 0.3.0 — 2026-09-01
 
 - Rebuilt the listening desk around one record, one preview, and the three decisions, removing the oversized hero and repeated learning-loop explanations.
 - Moved feedback, taste clues, search filters, shopping provenance, and secondary track metadata into compact, accessible disclosure controls without removing their data or actions.
-- Prevented embedded previews from claiming the Mac play/pause media keys while preserving the player’s own controls.
+- Added an initial Media Session interception attempt; v0.3.1 replaces it because a cross-origin child player could still claim the Mac play/pause media keys.
 - Kept BPM, key, length, source, price, volume, queue navigation, undo, imports, backups, next-round requests, and keeper CSV immediately available.
 - Improved responsive layout, keyboard focus, visible state, and touch target sizing.
 

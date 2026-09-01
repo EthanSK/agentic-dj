@@ -8,7 +8,7 @@ Thanks for helping make Agentic DJ more useful without making it less private.
 4. Keep personal crates, profiles, library exports, votes, receipts, credentials, music, and database files out of commits and issues.
 5. Explain the privacy and authority impact of changes that touch external services, imports, purchases, or updating.
 
-Do not add automatic purchases, stream ripping, arbitrary remote iframes, analytics, public bindings, or hidden account mutations. New providers need a documented official embed/source format, restricted host validation, tests, and clear network disclosure.
+Do not add automatic purchases, stream ripping, arbitrary remote iframes, analytics, public bindings, or hidden account mutations. New providers need a documented official preview-source format, restricted host validation, tests, clear network disclosure, and proof that playback does not become a controllable hardware-media-key session.
 
 Changes to the update path must remain fast-forward-only, recoverable, data-preserving, and non-destructive. Never make `reset --hard`, `clean`, forced checkout, or implicit stashing part of normal updating.
 
