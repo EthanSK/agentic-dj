@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-09-01
+
+- Rebuilt the listening desk around one record, one preview, and the three decisions, removing the oversized hero and repeated learning-loop explanations.
+- Moved feedback, taste clues, search filters, shopping provenance, and secondary track metadata into compact, accessible disclosure controls without removing their data or actions.
+- Prevented embedded previews from claiming the Mac play/pause media keys while preserving the player’s own controls.
+- Kept BPM, key, length, source, price, volume, queue navigation, undo, imports, backups, next-round requests, and keeper CSV immediately available.
+- Improved responsive layout, keyboard focus, visible state, and touch target sizing.
+
 ## 0.2.1 — 2026-09-01
 
 - Made official Bandcamp previews start at 25% and added an in-app volume slider with an explicit player-reload warning.
