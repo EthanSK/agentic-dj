@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2 — 2026-09-01
+
+- Made Web Audio teardown idempotent during React development remounts and hot replacement, preventing a duplicate `AudioContext.close()` rejection.
+
 ## 0.3.1 — 2026-09-01
 
 - Replaced the ineffective iframe Media Session workaround with a custom Web Audio player that Chromium treats as ambient rather than hardware-key controllable.

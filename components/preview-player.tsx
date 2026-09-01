@@ -201,7 +201,12 @@ export function PreviewPlayer({
       playingRef.current = false;
       stopSource();
       cancelFrame();
-      void contextRef.current?.close();
+      const context = contextRef.current;
+      contextRef.current = null;
+      gainRef.current = null;
+      bufferRef.current = null;
+      if (context && context.state !== 'closed')
+        void context.close().catch(() => undefined);
     };
   }, []);
 
