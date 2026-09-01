@@ -34,10 +34,10 @@ Agentic DJ binds only to `127.0.0.1`. Do not expose it through a tunnel or deplo
 
 ### Listen and decide
 
-- Set the preview level, then select **Enable official players** once. Players never autoplay and Bandcamp previews start at 25%.
+- Set the preview level, then select **Enable official preview** once. Players never autoplay and Bandcamp previews start at 25%. The embedded preview does not claim your computer’s hardware play/pause keys.
 - Read the DJ facts beside each record: verified BPM, alternate tempo where useful, key, length, label, and release date. Missing or disputed data stays visibly marked instead of being guessed.
 - Use **Keep**, **Pass**, or **Later**, or the left / right / down arrow keys outside a player.
-- Add optional feedback tags and a note before deciding.
+- Open **Feedback** for optional tags and a note; open **Track details** for labels, release data, sound clues, store searches, and provenance.
 - Press `Z`, `Command+Z`, or **Undo** to reverse the latest applicable decision.
 - After all ten decisions, choose **Request 10 more from agent**. The app downloads a private request containing every previous answer and its cautious inferred taste map.
 - Give that request to an assistant, then import the returned ten-track crate as the new active round. Earlier tracks and decisions remain local evidence.
@@ -82,7 +82,7 @@ Music streams are never copied, proxied, ripped, or saved by Agentic DJ.
 
 The Bandcamp level control is applied when its official cross-origin player loads. Changing it reloads that player, so the preview playhead resets. Spotify embeds retain Spotify's own volume control.
 
-Download a private-state JSON from **Taste & tools** as an inspectable recovery snapshot. Version 0.2 does not automate restoration; for a machine move, also stop the app and preserve the complete `.agentic-dj/` folder. Those files are private—do not attach them to a public issue.
+Download a private-state JSON from **Tools** as an inspectable recovery snapshot. Automatic restoration is not provided; for a machine move, also stop the app and preserve the complete `.agentic-dj/` folder. Those files are private—do not attach them to a public issue.
 
 ## Updating safely
 

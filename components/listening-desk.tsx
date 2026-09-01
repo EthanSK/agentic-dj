@@ -9,6 +9,8 @@ import {
   ChevronRight,
   Disc3,
   Headphones,
+  Info,
+  ListFilter,
   RotateCcw,
   Search,
   Settings2,
@@ -26,6 +28,10 @@ import {
   normalisePreviewVolume,
   playerUrl,
 } from '@/lib/player';
+import {
+  blockHardwareMediaKeys,
+  EMBEDDED_PLAYER_ALLOW,
+} from '@/lib/media-keys';
 import type { Crate, DeskState, TasteMap, Track, Verdict } from '@/lib/types';
 
 type View = 'unheard' | 'keep' | 'later' | 'all';
@@ -190,6 +196,15 @@ export function ListeningDesk() {
     },
     [],
   );
+  useEffect(() => {
+    const shield = blockHardwareMediaKeys(navigator.mediaSession);
+    document.documentElement.dataset.mediaKeyShield =
+      shield.blockedActions.join(',') || 'unsupported';
+    return () => {
+      shield.release();
+      delete document.documentElement.dataset.mediaKeyShield;
+    };
+  }, []);
 
   const changePreviewVolume = (value: number) => {
     const next = normalisePreviewVolume(value);
@@ -440,29 +455,39 @@ export function ListeningDesk() {
   }
 
   return (
-    <main className="desk-shell">
+    <main className="desk-shell" data-media-keys="ignored">
       <header className="masthead">
         <a className="wordmark" href="/" aria-label="Agentic DJ home">
-          <Disc3 size={29} strokeWidth={1.6} />
+          <Disc3 size={25} strokeWidth={1.7} />
           <span>
             agentic<span className="wordmark-dj">dj</span>
-            <small>GOOD TASTE. YOUR CALL.</small>
           </span>
         </a>
-        <span className="local-badge">
-          <i /> LOCAL LISTENING DESK
-        </span>
+        <div className="crate-context" aria-label="Current crate progress">
+          <span className="local-badge">
+            <i /> Local
+          </span>
+          {state && (
+            <>
+              <strong>Round {round}</strong>
+              <span>
+                {decided}/{tracks.length}
+              </span>
+            </>
+          )}
+        </div>
         <div className="header-actions">
           <Button
             variant="ghost"
             aria-expanded={settings}
+            aria-controls="taste-tools"
             onClick={() => setSettings(!settings)}
           >
             <Settings2 size={16} />
-            <span>Taste & tools</span>
+            <span>Tools</span>
           </Button>
           <a className="export-button" href="/api/export?format=csv">
-            <ArrowDownToLine size={15} /> Export keepers{' '}
+            <ArrowDownToLine size={15} /> Keepers CSV
             <span>{counts.keep}</span>
           </a>
         </div>
@@ -482,13 +507,14 @@ export function ListeningDesk() {
 
       {settings && (
         <section
+          id="taste-tools"
           className="settings-panel"
           aria-label="Taste profile and crate tools"
         >
           <div className="settings-title">
             <div>
-              <p className="eyebrow">MAKE IT YOURS</p>
-              <h2>You don’t need the genre name.</h2>
+              <p className="eyebrow">PRIVATE & LOCAL</p>
+              <h2>Taste & tools</h2>
             </div>
             <Button
               variant="ghost"
@@ -507,8 +533,9 @@ export function ListeningDesk() {
                   setNotice('Taste profile saved locally.');
               }}
             >
+              <h3>Taste profile</h3>
               <label className="field-label" htmlFor="taste-brief">
-                What gives you that rush?
+                What works?
               </label>
               <textarea
                 id="taste-brief"
@@ -518,10 +545,10 @@ export function ListeningDesk() {
                 onChange={(e) =>
                   setProfile({ ...profile, brief: e.target.value })
                 }
-                placeholder="Deep kick, proper bass, physical groove… even half-formed descriptions help."
+                placeholder="Deep kick, proper bass, physical groove…"
               />
               <label className="field-label" htmlFor="taste-avoid">
-                What should we skip?
+                What doesn’t?
               </label>
               <textarea
                 id="taste-avoid"
@@ -531,10 +558,10 @@ export function ListeningDesk() {
                 onChange={(e) =>
                   setProfile({ ...profile, avoid: e.target.value })
                 }
-                placeholder="Drum & bass by default, obvious drops, cheesy vocals, anything that feels cringe…"
+                placeholder="Cheesy vocals, obvious drops, too commercial…"
               />
               <label className="field-label" htmlFor="taste-seeds">
-                Reference tracks / library notes
+                Reference tracks or library notes
               </label>
               <textarea
                 id="taste-seeds"
@@ -544,122 +571,86 @@ export function ListeningDesk() {
                 onChange={(e) =>
                   setProfile({ ...profile, seeds: e.target.value })
                 }
-                placeholder="Artist — title, one per line. Add notes from your own playlists."
+                placeholder="Artist — title, one per line"
               />
               <Button type="submit" disabled={busy || !state}>
-                Save private profile
+                Save profile
               </Button>
-              <p className="field-help">
-                Stored on this computer. Saving does not send it to any AI
-                service.
-              </p>
+              <p className="field-help">Saved only on this computer.</p>
             </form>
             <div className="crate-tools">
-              <h3>1. Request the next ten</h3>
-              <p>
-                Export every Keep, Pass, Later, feedback tag and note. The brief
-                asks your agent for exactly ten more tracks and includes the
-                provisional sound patterns this app can infer.
-              </p>
-              <a className="text-action" href="/api/export?format=next">
-                <ArrowDownToLine size={14} /> Prepare next-round request
-              </a>
-              <h3>2. Bring back discoveries</h3>
-              <p>
-                Import the assistant’s verified crate JSON. No API key or
-                streaming account is required by Agentic DJ.
-              </p>
-              <label className="file-input-label">
-                <Upload size={15} /> Choose crate JSON
-                <input
-                  aria-label="Choose crate JSON"
-                  type="file"
-                  accept=".json,application/json"
-                  onChange={(e) => void readImport(e.target.files?.[0])}
-                />
-              </label>
-              {importCrate && (
-                <div className="import-review">
-                  <strong>{importCrate.title}</strong>
-                  <p>
-                    {importCrate.tracks.length} tracks validated. No data has
-                    changed yet.
-                  </p>
-                  <label className="field-label" htmlFor="import-mode">
-                    Import as
-                  </label>
-                  <select
-                    id="import-mode"
-                    value={importMode}
-                    onChange={(e) =>
-                      setImportMode(e.target.value as 'append' | 'new-crate')
-                    }
-                  >
-                    <option value="new-crate">
-                      New active crate — keep previous tracks and votes
-                    </option>
-                    <option value="append">Append to the current crate</option>
-                  </select>
-                  <Button disabled={busy} onClick={() => void doImport()}>
-                    Import {importCrate.tracks.length} tracks
-                  </Button>
-                </div>
-              )}
-              <h3>3. Approve a shortlist, not a surprise charge</h3>
-              <p>
-                Export keepers for a store-by-store comparison. Approve the
-                exact recordings, file formats and final total before your
-                assistant buys anything.
-              </p>
-              <div className="tool-links">
-                <a href="/api/export?format=keepers">Keeper JSON</a>
-                <a href="/api/export?format=crate">Current crate JSON</a>
-                <a href="/api/export?format=backup">Private data backup</a>
-                <a
-                  href="https://github.com/EthanSK/agentic-dj#make-it-your-own"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Setup & agent guide ↗
+              <div className="tool-section">
+                <h3>Next round</h3>
+                <p>Export your decisions and taste clues for ten new tracks.</p>
+                <a className="text-action" href="/api/export?format=next">
+                  <ArrowDownToLine size={14} /> Prepare agent request
                 </a>
               </div>
-              <p className="field-help">
-                Official players contact their provider when enabled. Artwork
-                loads from the record’s original host. Music is never copied or
-                downloaded by this app.
-              </p>
+              <div className="tool-section">
+                <h3>Import discoveries</h3>
+                <label className="file-input-label">
+                  <Upload size={15} /> Choose crate JSON
+                  <input
+                    aria-label="Choose crate JSON"
+                    type="file"
+                    accept=".json,application/json"
+                    onChange={(e) => void readImport(e.target.files?.[0])}
+                  />
+                </label>
+                {importCrate && (
+                  <div className="import-review">
+                    <strong>{importCrate.title}</strong>
+                    <p>{importCrate.tracks.length} tracks ready to import.</p>
+                    <label className="field-label" htmlFor="import-mode">
+                      Import as
+                    </label>
+                    <select
+                      id="import-mode"
+                      value={importMode}
+                      onChange={(e) =>
+                        setImportMode(e.target.value as 'append' | 'new-crate')
+                      }
+                    >
+                      <option value="new-crate">
+                        New crate — preserve previous tracks and votes
+                      </option>
+                      <option value="append">Append to current crate</option>
+                    </select>
+                    <Button disabled={busy} onClick={() => void doImport()}>
+                      Import {importCrate.tracks.length} tracks
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <div className="tool-section">
+                <h3>Data & setup</h3>
+                <div className="tool-links">
+                  <a href="/api/export?format=keepers">Keeper JSON</a>
+                  <a href="/api/export?format=crate">Crate JSON</a>
+                  <a href="/api/export?format=backup">Private backup</a>
+                  <a
+                    href="https://github.com/EthanSK/agentic-dj#make-it-your-own"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Setup guide ↗
+                  </a>
+                </div>
+                <p className="field-help">
+                  Approve exact files and the final total before any purchase.
+                  Players contact their official provider when enabled; music is
+                  never copied by this app.
+                </p>
+              </div>
             </div>
           </div>
         </section>
       )}
 
-      <section className="crate-heading">
-        <div>
-          <p className="eyebrow">
-            {state
-              ? `ROUND ${round} · ${String(tracks.length).padStart(2, '0')} TRACKS · EAR-LED CALIBRATION`
-              : 'YOUR LOCAL LISTENING DESK'}
-          </p>
-          <h1>
-            You listen.
-            <br />
-            <em>It learns.</em>
-          </h1>
-        </div>
-        <p className="crate-intro">
-          {state?.crate.description || 'Good records. Open ears. Your call.'}
-          <span>
-            No genre homework. Your previous answers shape the next ten.
-          </span>
-        </p>
-      </section>
-
       {!state ? (
         <section className="loading-state" aria-live="polite">
           <Disc3 size={30} />
-          <h2>
-            {error ? 'Your library is safe on disk.' : 'Opening your crate…'}
-          </h2>
+          <h1>{error ? 'Your library is safe.' : 'Opening your crate…'}</h1>
           <p>
             {error
               ? 'Reconnect to the local server to keep listening.'
@@ -667,289 +658,19 @@ export function ListeningDesk() {
           </p>
         </section>
       ) : (
-        <div className="workspace">
-          <section className="audition" aria-label="Listen and decide">
-            <div className="deck-top">
-              <span className="eyebrow">
-                {track ? 'ON THE DECK' : 'ROOM TO BREATHE'}
-              </span>
-              <span className="counter">
-                {track
-                  ? `${String(currentIndex + 1).padStart(2, '0')} / ${tracks.length}`
-                  : `${decided} DECIDED`}
-              </span>
-            </div>
-            {track ? (
-              <>
-                <div
-                  className="record-row swipe-surface"
-                  onPointerDown={(e) => {
-                    if (e.pointerType === 'touch')
-                      swipe.current = { x: e.clientX, y: e.clientY };
-                  }}
-                  onPointerCancel={() => {
-                    swipe.current = null;
-                  }}
-                  onPointerUp={(e) => {
-                    const start = swipe.current;
-                    swipe.current = null;
-                    if (
-                      start &&
-                      Math.abs(e.clientX - start.x) > 80 &&
-                      Math.abs(e.clientY - start.y) < 60
-                    )
-                      void decide(e.clientX > start.x ? 'keep' : 'pass');
-                  }}
-                >
-                  {track.artwork ? (
-                    <img
-                      key={track.artwork}
-                      className="record-art"
-                      src={track.artwork}
-                      alt={`${track.title} release artwork`}
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    <div className="record-art art-placeholder">
-                      <Disc3 size={70} strokeWidth={1} />
-                    </div>
-                  )}
-                  <div className="record-info">
-                    <span className="lane">{track.lane.toUpperCase()}</span>
-                    <h2>{track.title}</h2>
-                    <p className="artist">{track.artist}</p>
-                    <p
-                      className="rationale"
-                      title="A taste suggestion, not an objective rating"
-                    >
-                      {track.reason}
-                    </p>
-                    {(track.genres?.length || track.traits?.length) && (
-                      <div className="sound-clues">
-                        {track.genres?.length && (
-                          <div>
-                            <span>People might call it</span>
-                            <p>{track.genres.join(' · ')}</p>
-                          </div>
-                        )}
-                        {track.traits?.length && (
-                          <div>
-                            <span>Listen for</span>
-                            <p>{track.traits.join(' · ')}</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    <div className="dj-readout">
-                      <dl className="dj-facts" aria-label="DJ track facts">
-                        <div>
-                          <dt>BPM</dt>
-                          <dd className={!track.bpm ? 'unverified' : ''}>
-                            {tempo(track)}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Key</dt>
-                          <dd className={!track.musicalKey ? 'unverified' : ''}>
-                            {track.musicalKey || '—'}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Length</dt>
-                          <dd>{duration(track.seconds)}</dd>
-                        </div>
-                      </dl>
-                      <div className="release-strip">
-                        <span>
-                          <small>Label</small>
-                          {track.label || 'Not verified'}
-                        </span>
-                        <span>
-                          <small>Released</small>
-                          {released(track.released)}
-                        </span>
-                      </div>
-                      {track.tempoNote && (
-                        <p className="tempo-note">{track.tempoNote}</p>
-                      )}
-                    </div>
-                    <div className="track-facts">
-                      <span>
-                        {track.accessibility.replace('-', ' ').toUpperCase()}
-                      </span>
-                      <span>{track.setRole}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="player-shell" key={track.id}>
-                  {track.preview?.provider === 'bandcamp' && (
-                    <div className="preview-mixer">
-                      {previewVolume === 0 ? (
-                        <VolumeX size={17} aria-hidden="true" />
-                      ) : (
-                        <Volume2 size={17} aria-hidden="true" />
-                      )}
-                      <label htmlFor={`preview-volume-${track.id}`}>
-                        Preview level
-                      </label>
-                      <input
-                        id={`preview-volume-${track.id}`}
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="5"
-                        value={previewVolume}
-                        onChange={(event) =>
-                          changePreviewVolume(Number(event.target.value))
-                        }
-                      />
-                      <output htmlFor={`preview-volume-${track.id}`}>
-                        {previewVolume}%
-                      </output>
-                      <small aria-live="polite">
-                        {previewVolume !== playerVolume
-                          ? 'Applying…'
-                          : playerVolume === 0
-                            ? 'Muted — raise the level to reload'
-                            : playersAllowed
-                              ? 'Changing level reloads the official player'
-                              : 'Starts quiet when enabled'}
-                      </small>
-                    </div>
-                  )}
-                  <div className="player-stage">
-                    {playersAllowed && track.preview ? (
-                      track.preview.provider === 'bandcamp' &&
-                      playerVolume === 0 ? (
-                        <div className="no-preview">
-                          Preview muted. Raise the level to reload the player.
-                        </div>
-                      ) : (
-                        <iframe
-                          key={`${track.id}-${playerVolume}`}
-                          title={`${track.title} by ${track.artist} — official ${track.preview.provider} player`}
-                          src={playerUrl(track, playerVolume)}
-                          height={
-                            track.preview.provider === 'spotify' ? 152 : 120
-                          }
-                          loading="eager"
-                          allow="autoplay; encrypted-media"
-                          referrerPolicy="no-referrer"
-                        />
-                      )
-                    ) : track.preview ? (
-                      <button
-                        className="load-player"
-                        onClick={() => setPlayersAllowed(true)}
-                      >
-                        <Headphones size={19} /> Enable official players{' '}
-                        <span>No autoplay · default 25%</span>
-                      </button>
-                    ) : (
-                      <div className="no-preview">
-                        No embedded preview available. Open the source below to
-                        listen.
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="source-row">
-                  <a
-                    className="source-link"
-                    href={track.sourceUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Listen / download on {track.sourceName}{' '}
-                    <ArrowUpRight size={14} />
-                  </a>
-                  <span className="price-label">
-                    {money(track)}
-                    <small>
-                      {track.price
-                        ? 'Before tax · not yet price-compared'
-                        : 'No verified price saved'}
-                    </small>
+        <>
+          <div className="workspace">
+            <section className="audition" aria-label="Listen and decide">
+              <div className="deck-top">
+                <div className="deck-position">
+                  <span>
+                    {track
+                      ? `${String(currentIndex + 1).padStart(2, '0')} / ${tracks.length}`
+                      : `${decided} / ${tracks.length}`}
                   </span>
+                  <strong>{track?.lane || state.crate.title}</strong>
                 </div>
-                {track.caution && (
-                  <p className="track-caution">{track.caution}</p>
-                )}
-                <div className="decision-row">
-                  <Button
-                    className="decision pass"
-                    disabled={busy}
-                    onClick={() => void decide('pass')}
-                  >
-                    <X /> Pass <kbd>←</kbd>
-                  </Button>
-                  <Button
-                    className="decision later"
-                    disabled={busy}
-                    onClick={() => void decide('later')}
-                  >
-                    <SkipForward /> Later <kbd>↓</kbd>
-                  </Button>
-                  <Button
-                    className="decision keep"
-                    disabled={busy}
-                    onClick={() => void decide('keep')}
-                  >
-                    <Check /> Keep <kbd>→</kbd>
-                  </Button>
-                </div>
-                <details className="feedback-panel">
-                  <summary>
-                    Tell the next crate why <span>optional</span>
-                  </summary>
-                  <div className="feedback-tags">
-                    {feedbackTags.map((tag) => (
-                      <button
-                        key={tag}
-                        className={tags.includes(tag) ? 'selected' : ''}
-                        aria-pressed={tags.includes(tag)}
-                        onClick={() => {
-                          const nextTags = tags.includes(tag)
-                            ? tags.filter((t) => t !== tag)
-                            : [...tags, tag].slice(-4);
-                          setDrafts((current) => ({
-                            ...current,
-                            [track.id]: { note, tags: nextTags },
-                          }));
-                        }}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                  <textarea
-                    aria-label="Decision note"
-                    value={note}
-                    maxLength={800}
-                    rows={2}
-                    placeholder="Love that bass, but the vocal is too much…"
-                    onChange={(e) =>
-                      setDrafts((current) => ({
-                        ...current,
-                        [track.id]: { note: e.target.value, tags },
-                      }))
-                    }
-                  />
-                  <p>
-                    Tags and notes save when you choose Keep, Pass or Later.
-                  </p>
-                </details>
-                <div className="deck-bottom">
-                  <button
-                    className="undo-link"
-                    onClick={() => void undo()}
-                    disabled={busy || !lastDecision}
-                  >
-                    <RotateCcw size={13} /> Undo <kbd>Z</kbd>
-                  </button>
-                  <span className="keyboard-hint">
-                    Swipe artwork or use arrow keys outside the player.
-                  </span>
+                {track && (
                   <div className="browse-buttons">
                     <button
                       aria-label="Browse previous track without deciding"
@@ -975,275 +696,563 @@ export function ListeningDesk() {
                       <ChevronRight size={18} />
                     </button>
                   </div>
-                </div>
-                <details className="provenance">
-                  <summary>Source & shopping details</summary>
-                  <p>
-                    Source checked{' '}
-                    {track.checkedAt
-                      ? new Date(track.checkedAt).toLocaleDateString('en-GB', {
-                          dateStyle: 'medium',
-                        })
-                      : 'date not recorded'}
-                    . Prices can change; compare the exact recording and format
-                    at checkout. Musical fit and set role are suggestions, not
-                    measured ratings.
-                  </p>
-                  <div>
-                    <a
-                      href={`https://www.beatport.com/search?q=${encodeURIComponent(`${track.artist} ${track.title}`)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Search Beatport ↗
-                    </a>
-                    <a
-                      href={`https://www.junodownload.com/search/?q%5Ball%5D%5B%5D=${encodeURIComponent(`${track.artist} ${track.title}`)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Search Juno Download ↗
-                    </a>
-                    <a
-                      href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${track.artist} ${track.title}`)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Search YouTube ↗
-                    </a>
-                    {playersAllowed && (
-                      <button onClick={() => setPlayersAllowed(false)}>
-                        Disable embedded players
-                      </button>
-                    )}
-                  </div>
-                  <p>
-                    Search links are discovery tools, not verified offers.{' '}
-                    {track.suggestedBy ? `Curation: ${track.suggestedBy}.` : ''}
-                  </p>
-                </details>
-              </>
-            ) : (
-              <div className="crate-finished">
-                <Disc3 size={58} strokeWidth={1} />
-                <h2>
-                  {roundComplete ? `Round ${round} decoded.` : 'Pick a record.'}
-                </h2>
-                <p>
-                  {roundComplete
-                    ? `${counts.keep} keepers, ${counts.pass} passes${counts.later ? ` and ${counts.later} to revisit` : ''}. Your decisions are saved on this computer.`
-                    : 'Select a track from the queue, or switch to a different view.'}
-                </p>
-                {roundComplete && (
-                  <div className="finished-earprint">
-                    <Earprint map={inferredTaste} complete />
-                  </div>
                 )}
-                <div>
-                  {roundComplete ? (
-                    <a
-                      className="request-next"
-                      href="/api/export?format=next"
-                      onClick={() =>
-                        setNotice(
-                          'Private next-round request prepared. Give it to your agent, then import the returned ten tracks.',
-                        )
-                      }
-                    >
-                      <ArrowDownToLine size={18} />
-                      <span>
-                        Request 10 more from agent
-                        <small>Uses every previous answer</small>
-                      </span>
-                    </a>
-                  ) : (
-                    <Button onClick={() => pickView('unheard')}>
-                      Hear the unplayed tracks
-                    </Button>
-                  )}
-                  {roundComplete && (counts.later || counts.keep) ? (
-                    <button
-                      className="undo-link"
-                      onClick={() => pickView(counts.later ? 'later' : 'keep')}
-                    >
-                      Review {counts.later ? 'the maybes' : 'keepers'}
-                    </button>
-                  ) : null}
-                  <button
-                    className="undo-link"
-                    onClick={() => void undo()}
-                    disabled={busy || !lastDecision}
-                  >
-                    <RotateCcw size={14} /> Undo last decision
-                  </button>
-                </div>
-                {roundComplete && (
-                  <p className="agent-honesty">
-                    This downloads a private brief. The local app never sends
-                    your taste to an AI service by itself.
-                  </p>
-                )}
-                <p className="quiet-note">Nothing has been purchased.</p>
               </div>
-            )}
-            <output className="save-notice" aria-live="polite">
-              {busy
-                ? 'Saving to this computer…'
-                : notice ||
-                  (track && state.votes[track.id]
-                    ? `Previously marked ${state.votes[track.id].verdict}. Choose again to change it.`
-                    : 'Your ears get the final say. No purchases happen here.')}
-            </output>
-          </section>
-
-          <aside className="crate-rail" aria-label="Track queue">
-            <p className="eyebrow">ROUND {round} · YOUR TEN</p>
-            <div className="rail-count">
-              {String(decided).padStart(2, '0')}
-              <span>/ {tracks.length} decided</span>
-            </div>
-            <progress
-              className="crate-progress"
-              value={decided}
-              max={tracks.length}
-              aria-label={`${decided} of ${tracks.length} tracks decided`}
-            />
-            <div className="crate-stats">
-              <span>{counts.keep} kept</span>
-              <span>{counts.pass} passed</span>
-              <span>{counts.later} later</span>
-            </div>
-            <section className="earprint-card" aria-label="Inferred taste map">
-              <div className="earprint-heading">
-                <span>YOUR EARPRINT</span>
-                <small>{inferredTaste.decided} answers</small>
-              </div>
-              <Earprint map={inferredTaste} complete={roundComplete} />
-            </section>
-            <fieldset className="rail-tabs" aria-label="Filter by decision">
-              {(
-                [
-                  ['unheard', 'To hear'],
-                  ['keep', 'Keepers'],
-                  ['later', 'Later'],
-                  ['all', 'All'],
-                ] as const
-              ).map(([value, label]) => (
-                <button
-                  key={value}
-                  className={view === value ? 'active' : ''}
-                  aria-pressed={view === value}
-                  onClick={() => pickView(value)}
-                >
-                  {label}
-                </button>
-              ))}
-            </fieldset>
-            <div className="queue-search">
-              <Search size={14} />
-              <Input
-                aria-label="Search tracks or artists"
-                placeholder="Find a track or artist"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-            <select
-              className="lane-filter"
-              aria-label="Filter by musical lane"
-              value={lane}
-              onChange={(e) => setLane(e.target.value)}
-            >
-              <option value="all">All lanes</option>
-              {lanes.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-            <div className="queue-list">
-              {queue.length ? (
-                queue.map((t) => (
-                  <button
-                    className={`queue-track ${activeId === t.id ? 'selected' : ''}`}
-                    key={t.id}
-                    aria-current={activeId === t.id ? 'true' : undefined}
-                    onClick={() => setActiveId(t.id)}
-                    disabled={busy}
+              {track ? (
+                <>
+                  <div
+                    className="record-row swipe-surface"
+                    onPointerDown={(e) => {
+                      if (e.pointerType === 'touch')
+                        swipe.current = { x: e.clientX, y: e.clientY };
+                    }}
+                    onPointerCancel={() => {
+                      swipe.current = null;
+                    }}
+                    onPointerUp={(e) => {
+                      const start = swipe.current;
+                      swipe.current = null;
+                      if (
+                        start &&
+                        Math.abs(e.clientX - start.x) > 80 &&
+                        Math.abs(e.clientY - start.y) < 60
+                      )
+                        void decide(e.clientX > start.x ? 'keep' : 'pass');
+                    }}
                   >
-                    <span>
-                      {String(
-                        tracks.findIndex((x) => x.id === t.id) + 1,
-                      ).padStart(2, '0')}
-                    </span>
-                    {t.artwork ? (
+                    {track.artwork ? (
                       <img
-                        loading="lazy"
-                        src={t.artwork}
-                        alt=""
+                        key={track.artwork}
+                        className="record-art"
+                        src={track.artwork}
+                        alt={`${track.title} release artwork`}
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <Disc3 size={28} />
+                      <div className="record-art art-placeholder">
+                        <Disc3 size={70} strokeWidth={1} />
+                      </div>
                     )}
-                    <div>
-                      <strong>{t.title}</strong>
-                      <small>{t.artist}</small>
+                    <div className="record-info">
+                      <span className="lane">{track.lane}</span>
+                      <h1>{track.title}</h1>
+                      <p className="artist">{track.artist}</p>
+                      <dl className="dj-facts" aria-label="DJ track facts">
+                        <div>
+                          <dt>BPM</dt>
+                          <dd className={!track.bpm ? 'unverified' : ''}>
+                            {tempo(track)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Key</dt>
+                          <dd className={!track.musicalKey ? 'unverified' : ''}>
+                            {track.musicalKey || '—'}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Length</dt>
+                          <dd>{duration(track.seconds)}</dd>
+                        </div>
+                      </dl>
+                      <p
+                        className="rationale"
+                        title="A taste suggestion, not an objective rating"
+                      >
+                        {track.reason}
+                      </p>
                     </div>
-                    {state.votes[t.id]?.verdict === 'keep' ? (
-                      <Check size={15} />
-                    ) : activeId === t.id ? (
-                      <Disc3 size={17} />
-                    ) : null}
-                  </button>
-                ))
-              ) : (
-                <div className="queue-empty">
-                  <p>
-                    {query || lane !== 'all'
-                      ? 'No matches in this view.'
-                      : view === 'keep'
-                        ? 'Keep something you love. It’ll appear here.'
-                        : view === 'later'
-                          ? 'Nothing set aside for later.'
-                          : 'You’ve heard everything in this view.'}
-                  </p>
-                  {(query || lane !== 'all') && (
-                    <button
-                      onClick={() => {
-                        setQuery('');
-                        setLane('all');
-                      }}
+                  </div>
+
+                  <div className="player-shell" key={track.id}>
+                    {track.preview?.provider === 'bandcamp' && (
+                      <div className="preview-mixer">
+                        {previewVolume === 0 ? (
+                          <VolumeX size={17} aria-hidden="true" />
+                        ) : (
+                          <Volume2 size={17} aria-hidden="true" />
+                        )}
+                        <label htmlFor={`preview-volume-${track.id}`}>
+                          Volume
+                        </label>
+                        <input
+                          id={`preview-volume-${track.id}`}
+                          type="range"
+                          min="0"
+                          max="100"
+                          step="5"
+                          value={previewVolume}
+                          onChange={(event) =>
+                            changePreviewVolume(Number(event.target.value))
+                          }
+                        />
+                        <output htmlFor={`preview-volume-${track.id}`}>
+                          {previewVolume}%
+                        </output>
+                        <small aria-live="polite">
+                          {previewVolume !== playerVolume
+                            ? 'Applying…'
+                            : playerVolume === 0
+                              ? 'Muted — raise the level to reload'
+                              : playersAllowed
+                                ? 'Reloads the player when changed'
+                                : 'Starts quiet'}
+                        </small>
+                      </div>
+                    )}
+                    <div className="player-stage">
+                      {playersAllowed && track.preview ? (
+                        track.preview.provider === 'bandcamp' &&
+                        playerVolume === 0 ? (
+                          <div className="no-preview">
+                            Preview muted. Raise the volume to reload it.
+                          </div>
+                        ) : (
+                          <iframe
+                            key={`${track.id}-${playerVolume}`}
+                            title={`${track.title} by ${track.artist} — official ${track.preview.provider} player`}
+                            src={playerUrl(track, playerVolume)}
+                            height={
+                              track.preview.provider === 'spotify' ? 152 : 120
+                            }
+                            loading="eager"
+                            allow={EMBEDDED_PLAYER_ALLOW}
+                            referrerPolicy="no-referrer"
+                          />
+                        )
+                      ) : track.preview ? (
+                        <button
+                          className="load-player"
+                          onClick={() => setPlayersAllowed(true)}
+                        >
+                          <Headphones size={19} /> Enable official preview
+                          <span>No autoplay · starts at 25%</span>
+                        </button>
+                      ) : (
+                        <div className="no-preview">
+                          No embedded preview. Use the source link below.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="source-row">
+                    <a
+                      className="source-link"
+                      href={track.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
                     >
-                      Clear search and lane
+                      {track.sourceName} <ArrowUpRight size={14} />
+                    </a>
+                    <span className="price-label">{money(track)}</span>
+                  </div>
+
+                  <div className="decision-row">
+                    <Button
+                      className="decision pass"
+                      disabled={busy}
+                      onClick={() => void decide('pass')}
+                    >
+                      <X /> Pass <kbd>←</kbd>
+                    </Button>
+                    <Button
+                      className="decision later"
+                      disabled={busy}
+                      onClick={() => void decide('later')}
+                    >
+                      <SkipForward /> Later <kbd>↓</kbd>
+                    </Button>
+                    <Button
+                      className="decision keep"
+                      disabled={busy}
+                      onClick={() => void decide('keep')}
+                    >
+                      <Check /> Keep <kbd>→</kbd>
+                    </Button>
+                  </div>
+
+                  <div className="utility-panels">
+                    <details
+                      className="feedback-panel"
+                      key={`feedback-${track.id}`}
+                    >
+                      <summary>
+                        Feedback
+                        {(tags.length || note) && (
+                          <span>{tags.length + (note ? 1 : 0)}</span>
+                        )}
+                      </summary>
+                      <div className="feedback-body">
+                        <div className="feedback-tags">
+                          {feedbackTags.map((tag) => (
+                            <button
+                              key={tag}
+                              className={tags.includes(tag) ? 'selected' : ''}
+                              aria-pressed={tags.includes(tag)}
+                              onClick={() => {
+                                const nextTags = tags.includes(tag)
+                                  ? tags.filter((t) => t !== tag)
+                                  : [...tags, tag].slice(-4);
+                                setDrafts((current) => ({
+                                  ...current,
+                                  [track.id]: { note, tags: nextTags },
+                                }));
+                              }}
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                        </div>
+                        <textarea
+                          aria-label="Decision note"
+                          value={note}
+                          maxLength={800}
+                          rows={2}
+                          placeholder="Love that bass, but the vocal is too much…"
+                          onChange={(e) =>
+                            setDrafts((current) => ({
+                              ...current,
+                              [track.id]: { note: e.target.value, tags },
+                            }))
+                          }
+                        />
+                        <p>Saves with your next decision.</p>
+                      </div>
+                    </details>
+
+                    <details
+                      className="track-details"
+                      key={`details-${track.id}`}
+                    >
+                      <summary>
+                        <Info size={15} /> Track details
+                      </summary>
+                      <div className="track-details-body">
+                        <dl className="detail-grid">
+                          <div>
+                            <dt>Genres</dt>
+                            <dd>
+                              {track.genres?.join(' · ') || 'Not supplied'}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt>Listen for</dt>
+                            <dd>
+                              {track.traits?.join(' · ') || 'Not supplied'}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt>Label</dt>
+                            <dd>{track.label || 'Not verified'}</dd>
+                          </div>
+                          <div>
+                            <dt>Released</dt>
+                            <dd>{released(track.released)}</dd>
+                          </div>
+                          <div>
+                            <dt>Set role</dt>
+                            <dd>{track.setRole}</dd>
+                          </div>
+                          <div>
+                            <dt>Accessibility</dt>
+                            <dd>{track.accessibility.replace('-', ' ')}</dd>
+                          </div>
+                        </dl>
+                        {track.tempoNote && (
+                          <p className="tempo-note">{track.tempoNote}</p>
+                        )}
+                        {track.caution && (
+                          <p className="track-caution">{track.caution}</p>
+                        )}
+                        <div className="shopping-row">
+                          <a
+                            href={`https://www.beatport.com/search?q=${encodeURIComponent(`${track.artist} ${track.title}`)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Beatport ↗
+                          </a>
+                          <a
+                            href={`https://www.junodownload.com/search/?q%5Ball%5D%5B%5D=${encodeURIComponent(`${track.artist} ${track.title}`)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Juno ↗
+                          </a>
+                          <a
+                            href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${track.artist} ${track.title}`)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            YouTube ↗
+                          </a>
+                          {playersAllowed && (
+                            <button onClick={() => setPlayersAllowed(false)}>
+                              Disable players
+                            </button>
+                          )}
+                        </div>
+                        <p className="provenance-note">
+                          Source checked{' '}
+                          {track.checkedAt
+                            ? new Date(track.checkedAt).toLocaleDateString(
+                                'en-GB',
+                                { dateStyle: 'medium' },
+                              )
+                            : 'date not recorded'}
+                          . Prices can change; verify the exact recording and
+                          format at checkout. Search links are not verified
+                          offers.
+                          {track.suggestedBy
+                            ? ` Curation: ${track.suggestedBy}.`
+                            : ''}
+                        </p>
+                      </div>
+                    </details>
+                  </div>
+
+                  <div className="deck-bottom">
+                    <button
+                      className="undo-link"
+                      onClick={() => void undo()}
+                      disabled={busy || !lastDecision}
+                    >
+                      <RotateCcw size={14} /> Undo <kbd>Z</kbd>
                     </button>
+                    <output className="save-notice" aria-live="polite">
+                      {busy
+                        ? 'Saving…'
+                        : notice ||
+                          (state.votes[track.id]
+                            ? `Marked ${state.votes[track.id].verdict} · saved locally`
+                            : 'Decisions save locally')}
+                    </output>
+                  </div>
+                </>
+              ) : (
+                <div className="crate-finished">
+                  <Disc3 size={50} strokeWidth={1} />
+                  <h1>
+                    {roundComplete
+                      ? `Round ${round} decoded.`
+                      : 'Pick a record.'}
+                  </h1>
+                  <p>
+                    {roundComplete
+                      ? `${counts.keep} keepers · ${counts.pass} passes${counts.later ? ` · ${counts.later} later` : ''}`
+                      : 'Choose a track from the queue.'}
+                  </p>
+                  {roundComplete && (
+                    <div className="finished-earprint">
+                      <Earprint map={inferredTaste} complete />
+                    </div>
                   )}
+                  <div>
+                    {roundComplete ? (
+                      <a
+                        className="request-next"
+                        href="/api/export?format=next"
+                        onClick={() =>
+                          setNotice(
+                            'Next-round request prepared from your answers.',
+                          )
+                        }
+                      >
+                        <ArrowDownToLine size={18} />
+                        <span>
+                          Request 10 more
+                          <small>Uses every answer</small>
+                        </span>
+                      </a>
+                    ) : (
+                      <Button onClick={() => pickView('unheard')}>
+                        Show unplayed tracks
+                      </Button>
+                    )}
+                    {roundComplete && (counts.later || counts.keep) ? (
+                      <button
+                        className="undo-link"
+                        onClick={() =>
+                          pickView(counts.later ? 'later' : 'keep')
+                        }
+                      >
+                        Review {counts.later ? 'later' : 'keepers'}
+                      </button>
+                    ) : null}
+                    <button
+                      className="undo-link"
+                      onClick={() => void undo()}
+                      disabled={busy || !lastDecision}
+                    >
+                      <RotateCcw size={14} /> Undo last decision
+                    </button>
+                  </div>
+                  <p className="quiet-note">
+                    Saved locally · nothing purchased
+                  </p>
                 </div>
               )}
-            </div>
-            <div className="rail-note">
-              <Headphones size={22} />
-              <h3>The next ten start here.</h3>
-              <p>
-                Finish this round, then request ten more. The agent brief uses
-                every previous answer and asks for new evidence—not more of the
-                same genre by default.
-              </p>
-            </div>
-          </aside>
-        </div>
+            </section>
+
+            <aside className="crate-rail" aria-label="Track queue">
+              <div className="rail-heading">
+                <div>
+                  <span>Round {round}</span>
+                  <strong>{state.crate.title}</strong>
+                </div>
+                <b>
+                  {decided}/{tracks.length}
+                </b>
+              </div>
+              <progress
+                className="crate-progress"
+                value={decided}
+                max={tracks.length}
+                aria-label={`${decided} of ${tracks.length} tracks decided`}
+              />
+              <fieldset className="rail-tabs" aria-label="Filter by decision">
+                {(
+                  [
+                    ['unheard', `To hear ${counts.unheard}`],
+                    ['keep', `Keep ${counts.keep}`],
+                    ['later', `Later ${counts.later}`],
+                    ['all', 'All'],
+                  ] as const
+                ).map(([value, label]) => (
+                  <button
+                    key={value}
+                    className={view === value ? 'active' : ''}
+                    aria-pressed={view === value}
+                    onClick={() => pickView(value)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </fieldset>
+              <details
+                className="queue-filters"
+                open={query || lane !== 'all' ? true : undefined}
+              >
+                <summary>
+                  <ListFilter size={14} /> Filter tracks
+                  {(query || lane !== 'all') && <span>Active</span>}
+                </summary>
+                <div className="queue-filter-body">
+                  <div className="queue-search">
+                    <Search size={14} />
+                    <Input
+                      aria-label="Search tracks or artists"
+                      placeholder="Track or artist"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                  </div>
+                  <select
+                    className="lane-filter"
+                    aria-label="Filter by musical lane"
+                    value={lane}
+                    onChange={(e) => setLane(e.target.value)}
+                  >
+                    <option value="all">All lanes</option>
+                    {lanes.map((l) => (
+                      <option key={l} value={l}>
+                        {l}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </details>
+              <div className="queue-list">
+                {queue.length ? (
+                  queue.map((t) => {
+                    const verdict = state.votes[t.id]?.verdict;
+                    return (
+                      <button
+                        className={`queue-track ${activeId === t.id ? 'selected' : ''} ${verdict ? `verdict-${verdict}` : ''}`}
+                        key={t.id}
+                        aria-current={activeId === t.id ? 'true' : undefined}
+                        onClick={() => setActiveId(t.id)}
+                        disabled={busy}
+                      >
+                        <span>
+                          {String(
+                            tracks.findIndex((x) => x.id === t.id) + 1,
+                          ).padStart(2, '0')}
+                        </span>
+                        {t.artwork ? (
+                          <img
+                            loading="lazy"
+                            src={t.artwork}
+                            alt=""
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <Disc3 size={28} />
+                        )}
+                        <div>
+                          <strong>{t.title}</strong>
+                          <small>{t.artist}</small>
+                        </div>
+                        {verdict === 'keep' ? (
+                          <Check size={15} aria-label="Kept" />
+                        ) : verdict === 'pass' ? (
+                          <X size={15} aria-label="Passed" />
+                        ) : verdict === 'later' ? (
+                          <SkipForward size={15} aria-label="Saved for later" />
+                        ) : activeId === t.id ? (
+                          <Disc3 size={17} aria-hidden="true" />
+                        ) : null}
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="queue-empty">
+                    <p>
+                      {query || lane !== 'all'
+                        ? 'No matches.'
+                        : view === 'keep'
+                          ? 'No keepers yet.'
+                          : view === 'later'
+                            ? 'Nothing saved for later.'
+                            : 'This view is complete.'}
+                    </p>
+                    {(query || lane !== 'all') && (
+                      <button
+                        onClick={() => {
+                          setQuery('');
+                          setLane('all');
+                        }}
+                      >
+                        Clear filters
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              <details className="earprint-card">
+                <summary>
+                  Taste clues <span>{inferredTaste.decided}</span>
+                </summary>
+                <div className="earprint-body">
+                  <Earprint map={inferredTaste} complete={roundComplete} />
+                </div>
+              </details>
+            </aside>
+          </div>
+
+          <footer className="desk-footer">
+            <span>Local data · no analytics · no auto-purchases</span>
+            <a
+              href="https://github.com/EthanSK/agentic-dj"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub ↗
+            </a>
+          </footer>
+        </>
       )}
-      <footer className="desk-footer">
-        <span>HUMAN TASTE × AGENT-ASSISTED DIGGING</span>
-        <a
-          href="https://github.com/EthanSK/agentic-dj"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Open source · Agentic DJ ↗
-        </a>
-        <span>Local data. No analytics. No auto-purchases.</span>
-      </footer>
     </main>
   );
 }
