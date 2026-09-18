@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agentic DJ</title>
+    <meta name="description" content="An open-source local listening desk that turns every Keep, Pass and Later decision into better agent-assisted track discovery.">
+    <meta name="theme-color" content="#16354a">
+    <meta property="og:title" content="Agentic DJ">
+    <meta property="og:description" content="Listen to ten official previews, decide with your ears, then give your agent the full evidence for the next round.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ethansk.github.io/agentic-dj/">
+    <link rel="canonical" href="https://ethansk.github.io/agentic-dj/">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="stylesheet" href="styles.css?v=1">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Agentic DJ home"><img src="favicon.svg" alt="" width="36" height="36"><span>Agentic <b>DJ</b></span></a>
+      <nav aria-label="Main navigation"><a href="#how-it-works">How it works</a><a href="#run">Run locally</a><a href="https://github.com/EthanSK/agentic-dj">GitHub</a></nav>
+    </header>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Open source · local first · ten at a time</p>
+          <h1 id="hero-title">Decide with your ears.<br>Let the evidence pick what comes next.</h1>
+          <p class="intro">Agentic DJ turns every Keep, Pass and Later decision into a private brief your AI assistant can use to research the next ten tracks.</p>
+          <div class="actions"><a class="primary" href="https://github.com/EthanSK/agentic-dj">GitHub</a><a class="secondary" href="#run">Run locally</a></div>
+          <p class="host-note">This page describes the project. Your listening desk stays on your computer.</p>
+        </div>
+        <div class="crate-visual">
+          <div class="record" aria-hidden="true"><div class="record-label"><span>ROUND</span><strong>10</strong><small>LISTEN<br>DECIDE<br>LEARN</small></div></div>
+          <ol class="decision-strip">
+            <li class="keep"><span>01</span> Deep kick <b>Keep</b></li>
+            <li class="pass"><span>02</span> Too polished <b>Pass</b></li>
+            <li class="later"><span>03</span> Needs a set <b>Later</b></li>
+            <li class="keep"><span>04</span> Weight + swing <b>Keep</b></li>
+          </ol>
+        </div>
+      </section>
+      <section class="workflow" id="how-it-works" aria-labelledby="workflow-title">
+        <div class="section-heading"><div><p class="eyebrow">One listening loop</p><h2 id="workflow-title">Your taste is the dataset.</h2></div></div>
+        <ol class="steps">
+          <li><span>01</span><h3>Listen</h3><p>Hear ten official previews with useful DJ facts beside each track.</p></li>
+          <li><span>02</span><h3>Decide</h3><p>Mark Keep, Pass or Later, then add a reason only when it helps.</p></li>
+          <li><span>03</span><h3>Go again</h3><p>Export one private brief containing every decision from every round so far.</p></li>
+        </ol>
+      </section>
+      <section class="local" id="run" aria-labelledby="run-title">
+        <div><p class="eyebrow">Your machine, your library</p><h2 id="run-title">Run the full listening desk locally.</h2><p>Tracks, votes, playlists, your profile and agent briefs stay on your computer and are excluded from Git. A Keep vote never approves a purchase or a Rekordbox change.</p></div>
+        <section class="terminal" aria-label="Installation commands"><button type="button" class="terminal-copy" aria-label="Copy installation commands">Copy</button><pre><code>git clone https://github.com/EthanSK/agentic-dj.git
+cd agentic-dj
+npm ci
+npm start</code></pre><p>Then open <a href="http://127.0.0.1:4371">127.0.0.1:4371</a></p></section>
+      </section>
+    </main>
+    <footer><p>Agentic DJ uses <a href="https://github.com/EthanSK/agentic-dj/blob/main/LICENSE">no-sale source terms</a>. Use and modify for yourself; selling the software requires a separate license. <a href="https://github.com/EthanSK/agentic-dj/blob/main/LICENSING.md">Scope and earlier permissions</a>.</p><a href="https://github.com/EthanSK/agentic-dj">Source code</a></footer>
+    <script src="script.js?v=1"></script>
+  </body>
+</html>

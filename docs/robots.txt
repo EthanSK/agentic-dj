@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ethansk.github.io/agentic-dj/sitemap.xml

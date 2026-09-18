@@ -2,6 +2,8 @@
 
 **Find good records with an agent. Decide with your ears. Buy only after you approve the shortlist.**
 
+[Website](https://ethansk.github.io/agentic-dj/) · [Run locally](#run-it) · [Agent workflow](docs/agent-workflow.md)
+
 Agentic DJ is a local listening desk for music discovery. An AI assistant can inspect music references you choose to share, research a ten-track round, and return verified track metadata. You listen through official players and mark **Keep**, **Pass**, or **Later**. The app turns those decisions into a provisional map of the genres and physical sound qualities you respond to. That evidence shapes the next ten—it is never permission to spend money.
 
 This repository includes a ten-track calibration round spanning UK bass, garage, techno, dub, breakbeat, dancehall, and leftfield club music. It is designed for someone who can recognise the right bass, kick, groove, or feeling before they know the genre name. Every item has an official Bandcamp player and a source that was checked when the round was assembled.
