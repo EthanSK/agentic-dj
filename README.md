@@ -147,4 +147,4 @@ The stack is React 19, Vinext/Vite, Cloudflare’s local runtime, D1/SQLite, Dri
 
 ## License
 
-Covered first-party code uses [the no-sale terms](LICENSE); earlier grants remain in force. Release artwork, recordings, artist names, and third-party player interfaces remain the property of their respective owners and are not covered by this software licence.
+Source-available under [Ethan Source-Available No-Sale Terms 1.0](LICENSE). You can use and modify the covered code, including internally at work, and share it without charge. Selling the software, modified versions, paid access, or bundles requires a separate commercial license. Earlier licenses and third-party rights remain in force. See [scope and release policy](LICENSING.md). Release artwork, recordings, artist names, and third-party player interfaces remain the property of their respective owners and are not covered by this software licence.
