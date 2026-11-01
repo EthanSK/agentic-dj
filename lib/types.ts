@@ -15,7 +15,11 @@ export interface Track {
   rounds?: RoundRef[];
   discovery?: TrackDiscovery;
   /** Agent-proposed running order, not proof that adjacent tracks mix cleanly. */
-  setPlacement?: { rank: number; note: string };
+  setPlacement?: {
+    rank: number;
+    note: string;
+    section?: 'beginning' | 'middle' | 'end';
+  };
   /** User and agent context stay distinct; these are preferences, not action authority. */
   notes?: { user?: string; agent?: string };
   /** Ethan's rough beginning/middle/end hint, 0–100; never a fixed playlist slot. */

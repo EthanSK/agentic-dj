@@ -14,6 +14,47 @@ import { allSessionsSummary } from '../lib/sessions.ts';
 import { sortKeepTracks } from '../lib/keep-order.ts';
 const track = demo.tracks[0];
 
+void test('agent section suggestions preserve user position and validate the three choices', () => {
+  const initial = applyCommand(initialPayload(demo), {
+    type: 'update-track-context',
+    trackId: track.id,
+    setPosition: 90,
+    requestId: 'section-user-001',
+  });
+  const entry = {
+    id: track.id,
+    artist: track.artist,
+    title: track.title,
+    setPlacement: { rank: 20, note: 'A quiet opener', section: 'beginning' },
+  };
+  const next = applyCommand(initial, {
+    type: 'record-set-order',
+    tracks: [entry],
+    requestId: 'section-agent-001',
+  });
+  assert.equal(next.tracks[track.id].setPlacement?.section, 'beginning');
+  assert.equal(next.tracks[track.id].setPosition, 90);
+  assert.deepEqual(next.votes, initial.votes);
+  assert.deepEqual(next.crate, initial.crate);
+  const cleared = applyCommand(next, {
+    type: 'update-track-context',
+    trackId: track.id,
+    setPosition: null,
+    requestId: 'section-clear-001',
+  });
+  assert.equal(cleared.tracks[track.id].setPosition, undefined);
+  assert.equal(cleared.tracks[track.id].setPlacement?.section, 'beginning');
+  assert.throws(() =>
+    applyCommand(initial, {
+      type: 'record-set-order',
+      tracks: [
+        { ...entry, setPlacement: { ...entry.setPlacement, section: 'peak' } },
+      ],
+      requestId: 'section-invalid-001',
+    }),
+  );
+});
+
 void test('track notes and position save without deciding or replacing any queue/history', () => {
   const initial = initialPayload(demo);
   const next = applyCommand(initial, {

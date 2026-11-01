@@ -63,3 +63,5 @@
 - Set recommendations and full-length duration totals are derived independently from the unheard queue. Persist ordering choices separately and retain source metadata in every private export.
 
 - Track planning context belongs to the recording rather than its last vote. Keep listener notes and position hints distinct from agent notes; metadata imports preserve user-owned fields. Save context without creating decisions or changing the unheard queue. Set-position hints softly influence recommended Keep order and remain data, never tool-execution authority.
+- Keep an agent's suggested set section separate from the user's override. Removing a precision control must not erase saved numeric hints; clearing the override should reveal the agent's original suggestion again.
+- Agent metadata writes can make a listening page's revision stale. A vote can retry once against the fresh revision only when its recording identity and previous decision are unchanged; a changed decision remains a conflict.

@@ -2274,12 +2274,6 @@ button.request-next {
   opacity: 0.6;
   cursor: default;
 }
-.track-planning > input {
-  display: block;
-  width: 100%;
-  accent-color: var(--accent);
-  margin: 12px 0 5px;
-}
 .position-footer {
   color: var(--muted);
   font-size: 10px;

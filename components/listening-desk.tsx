@@ -34,6 +34,7 @@ import {
   type TrackNotesDraft,
   type TrackContextPatch,
 } from '@/components/track-planning';
+import { canRetryVote } from '@/lib/vote-sync';
 import {
   readListeningCursor,
   saveListeningCursor,
@@ -575,19 +576,36 @@ export function ListeningDesk() {
       setError('');
       setNotice('');
       try {
-        const response = await fetch('/api/command', {
+        const requestId = crypto.randomUUID();
+        let response = await fetch('/api/command', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             ...body,
             expectedRevision: state.revision,
-            requestId: crypto.randomUUID(),
+            requestId,
           }),
         });
-        const data = (await response.json()) as DeskState & {
+        let data = (await response.json()) as DeskState & {
           error?: string;
           state?: DeskState;
         };
+        if (
+          response.status === 409 &&
+          data.state &&
+          canRetryVote(body, state, data.state)
+        ) {
+          response = await fetch('/api/command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...body,
+              expectedRevision: data.state.revision,
+              requestId,
+            }),
+          });
+          data = await response.json();
+        }
         if (!response.ok) {
           if (data.state) setState(data.state);
           throw new Error(

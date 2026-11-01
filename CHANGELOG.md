@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2
+
+- Simplify set position to Beginning, Middle and End, initially showing the agent suggestion.
+- Keep saved user position overrides and notes when recommendations change.
+- Retry a listening decision once after an unrelated metadata update, without overwriting a changed decision.
+
 ## 0.4.1
 
 - Add per-track user and agent notes, preserved across metadata refreshes and exports.

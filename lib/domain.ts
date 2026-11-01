@@ -182,7 +182,19 @@ function validateSetPlacement(
     v.rank > 100000
   )
     throw new InputError('Invalid set position.');
-  return { rank: v.rank, note: string(v.note, 'set note', 250, true) };
+  if (
+    v.section !== undefined &&
+    (typeof v.section !== 'string' ||
+      !['beginning', 'middle', 'end'].includes(v.section))
+  )
+    throw new InputError('Invalid set position.');
+  return {
+    rank: v.rank,
+    note: string(v.note, 'set note', 250, true),
+    ...(v.section !== undefined
+      ? { section: v.section as 'beginning' | 'middle' | 'end' }
+      : {}),
+  };
 }
 function validateSetPosition(value: unknown): number {
   if (

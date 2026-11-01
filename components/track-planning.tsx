@@ -2,7 +2,6 @@
 
 // Per-record context for the listener and their agent. Position is a soft
 // preference; editing it must not vote, replace audio or reorder To hear.
-import { useEffect, useState } from 'react';
 import type { Track } from '@/lib/types';
 
 export type TrackNotesDraft = { user: string; agent: string };
@@ -25,23 +24,25 @@ export function TrackPlanning({
   onDraft: (draft: TrackNotesDraft) => void;
   onSave: (patch: TrackContextPatch) => Promise<boolean>;
 }) {
-  const [position, setPosition] = useState(track.setPosition ?? 50);
-  useEffect(() => {
-    // Only a saved preference update resets the slider, not typing in notes.
-    setPosition(track.setPosition ?? 50); // oxlint-disable-line react/react-compiler
-  }, [track.setPosition]);
+  // Ethan's three buttons replace the fine-position slider. Keep the agent's
+  // suggestion distinct from a saved user override; Clear restores it.
+  const suggested = track.setPlacement?.section;
+  const position =
+    track.setPosition ??
+    (suggested === 'beginning'
+      ? 0
+      : suggested === 'middle'
+        ? 50
+        : suggested === 'end'
+          ? 100
+          : undefined);
   const hasPosition = track.setPosition !== undefined;
   const notesChanged =
     draft.user !== (track.notes?.user ?? '') ||
     draft.agent !== (track.notes?.agent ?? '');
   const savePosition = async (value: number | null) => {
     if (value === (track.setPosition ?? null)) return;
-    if (!(await onSave({ setPosition: value })))
-      setPosition(track.setPosition ?? 50);
-  };
-  const pickPosition = (value: number) => {
-    setPosition(value);
-    void savePosition(value);
+    await onSave({ setPosition: value });
   };
   return (
     <section
@@ -51,7 +52,13 @@ export function TrackPlanning({
       <div className="position-heading">
         <strong>Set position</strong>
         <span>
-          {hasPosition ? `${position}% through the set` : 'No preference'}
+          {position === undefined
+            ? 'No preference'
+            : position < 34
+              ? 'Beginning'
+              : position <= 66
+                ? 'Middle'
+                : 'End'}
         </span>
         {hasPosition && (
           <button
@@ -76,48 +83,19 @@ export function TrackPlanning({
             type="button"
             disabled={busy}
             aria-pressed={
-              hasPosition &&
+              position !== undefined &&
               (value === 0
                 ? position < 34
                 : value === 50
                   ? position >= 34 && position <= 66
                   : position > 66)
             }
-            onClick={() => pickPosition(value)}
+            onClick={() => void savePosition(value)}
           >
             {label}
           </button>
         ))}
       </fieldset>
-      <input
-        type="range"
-        aria-label="Preferred set position"
-        aria-valuetext={`${position}% through the set`}
-        min="0"
-        max="100"
-        step="1"
-        value={position}
-        disabled={busy}
-        onChange={(event) => setPosition(Number(event.target.value))}
-        onPointerUp={(event) =>
-          void savePosition(Number(event.currentTarget.value))
-        }
-        onKeyUp={(event) => {
-          if (
-            [
-              'ArrowLeft',
-              'ArrowRight',
-              'ArrowUp',
-              'ArrowDown',
-              'Home',
-              'End',
-              'PageUp',
-              'PageDown',
-            ].includes(event.key)
-          )
-            void savePosition(Number(event.currentTarget.value));
-        }}
-      />
       <div className="position-footer">
         <span>A guide, not a fixed slot.</span>
       </div>
