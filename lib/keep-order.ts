@@ -37,7 +37,7 @@ export function sortKeepTracks(
   votes: Record<string, Vote>,
   sort: KeepSort,
 ): Track[] {
-  return [...tracks].sort((a, b) => {
+  const baseline = [...tracks].sort((a, b) => {
     if (sort === 'recommended') {
       const rank =
         (a.setPlacement?.rank ?? Number.POSITIVE_INFINITY) -
@@ -47,6 +47,24 @@ export function sortKeepTracks(
     const added =
       Date.parse(votes[a.id]?.at || '') - Date.parse(votes[b.id]?.at || '');
     return Number.isFinite(added) ? added * (sort === 'newest' ? -1 : 1) : 0;
+  });
+  if (sort !== 'recommended' || baseline.length < 2) return baseline;
+  const positions = new Map(
+    baseline.map((track, index) => {
+      const base = (index / (baseline.length - 1)) * 100;
+      // Ethan's beginning/middle/end is deliberately soft. Preserve some of the
+      // agent's musical flow; do not pin a track to an absolute numbered slot.
+      const score =
+        track.setPosition === undefined
+          ? base
+          : base / 3 + (track.setPosition * 2) / 3;
+      return [track.id, { index, score }];
+    }),
+  );
+  return [...baseline].sort((a, b) => {
+    const first = positions.get(a.id)!;
+    const second = positions.get(b.id)!;
+    return first.score - second.score || first.index - second.index;
   });
 }
 

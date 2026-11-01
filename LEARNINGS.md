@@ -61,3 +61,5 @@
 - Recent listening history must use the catalogue record ID, not a provider preview sample ID; Beatport sample UUIDs cannot recover a saved track. Store actual preview starts and a tab-local cursor, restoring the card without autoplay after reload.
 - Normal listening runs with Vite hot replacement and file watching disabled. Agents work on an isolated copy and install updates only after playback stops; source edits must never reload an audition page.
 - Set recommendations and full-length duration totals are derived independently from the unheard queue. Persist ordering choices separately and retain source metadata in every private export.
+
+- Track planning context belongs to the recording rather than its last vote. Keep listener notes and position hints distinct from agent notes; metadata imports preserve user-owned fields. Save context without creating decisions or changing the unheard queue. Set-position hints softly influence recommended Keep order and remain data, never tool-execution authority.

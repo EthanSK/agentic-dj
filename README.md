@@ -40,6 +40,7 @@ Agentic DJ binds only to `127.0.0.1`. Do not expose it through a tunnel or deplo
 - Browse with **← / →**. If paused, the next track stays paused; if playing, it continues into the next track. Use **P / K / L** for Pass / Keep / Later and **Z** to undo.
 - The player stays on its loaded track when you browse Keep, Later, All or past sessions. Select a saved track and press **Load into player** to change it.
 - Read the source label: a Spotify discovery is different from a new agent recommendation. Audio uses official Beatport or Bandcamp previews through Web Audio, without a Spotify embed.
+- Use **Beginning / Middle / End** and the fine-position slider below the player to suggest where a track belongs. These are soft preferences, not fixed slots. Add **Your notes** and **Agent notes** under **Track notes**, then save; both travel with the record, CSV and private agent brief.
 - **Keep** defaults to a suggested set order. Switch to newest or oldest by the date you kept each track. Full-track duration totals follow the selected list and filters.
 - Session counts and CSV exports separate the current shopping list from older decisions. **Past sessions** keeps earlier history accessible. A gap longer than 14 days starts a new session on your next decision.
 - Expanded taste clues show **this session** and **previous sessions** separately. Feedback tags and notes help explain why a track works.

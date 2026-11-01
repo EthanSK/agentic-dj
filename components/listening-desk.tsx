@@ -30,6 +30,11 @@ import { Input } from '@/components/ui/input';
 import { PreviewPlayer, usePreviewAudio } from '@/components/preview-player';
 import { DiscoveryBadge } from '@/components/discovery-badge';
 import {
+  TrackPlanning,
+  type TrackNotesDraft,
+  type TrackContextPatch,
+} from '@/components/track-planning';
+import {
   readListeningCursor,
   saveListeningCursor,
   recentPlays,
@@ -246,6 +251,9 @@ export function ListeningDesk() {
   const [now, setNow] = useState(0);
   const [drafts, setDrafts] = useState<
     Record<string, { note: string; tags: string[] }>
+  >({});
+  const [trackNotesDrafts, setTrackNotesDrafts] = useState<
+    Record<string, TrackNotesDraft>
   >({});
   const [profile, setProfile] = useState({ brief: '', avoid: '', seeds: '' });
   const [importCrate, setImportCrate] = useState<Crate | null>(null);
@@ -605,6 +613,26 @@ export function ListeningDesk() {
     },
     [state],
   );
+
+  async function saveTrackContext(
+    target: Track,
+    patch: TrackContextPatch,
+  ): Promise<boolean> {
+    const next = await command({
+      type: 'update-track-context',
+      trackId: target.id,
+      ...patch,
+    });
+    if (!next) return false;
+    if ('userNotes' in patch || 'agentNotes' in patch) {
+      setTrackNotesDrafts((current) => {
+        const updated = { ...current };
+        delete updated[target.id];
+        return updated;
+      });
+    }
+    return true;
+  }
 
   const decide = useCallback(
     async (verdict: Verdict) => {
@@ -1389,6 +1417,25 @@ export function ListeningDesk() {
                       )}
                     </div>
                   </div>
+
+                  <TrackPlanning
+                    key={track.id}
+                    track={track}
+                    busy={busy}
+                    draft={
+                      trackNotesDrafts[track.id] ?? {
+                        user: track.notes?.user ?? '',
+                        agent: track.notes?.agent ?? '',
+                      }
+                    }
+                    onDraft={(draft) =>
+                      setTrackNotesDrafts((current) => ({
+                        ...current,
+                        [track.id]: draft,
+                      }))
+                    }
+                    onSave={(patch) => saveTrackContext(track, patch)}
+                  />
 
                   <div className="source-row">
                     <a

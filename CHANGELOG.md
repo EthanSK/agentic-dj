@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+- Add per-track user and agent notes, preserved across metadata refreshes and exports.
+- Add beginning/middle/end controls and a fine-position slider below the player.
+- Blend rough set-position preferences with the recommended Keep order without changing the unheard queue.
+
 ## 0.4.0
 
 - Separate shopping sessions while keeping global listening history.

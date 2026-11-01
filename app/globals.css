@@ -2214,3 +2214,113 @@ button.request-next {
     transition: none !important;
   }
 }
+
+/* A rough set-position hint lives with the record, independently of voting. */
+.track-planning {
+  margin: 14px 0 0;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.position-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.position-heading strong {
+  font-weight: 650;
+}
+.position-heading span {
+  color: var(--muted);
+  margin-left: auto;
+  font-size: 11px;
+}
+.position-heading button {
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.position-choices {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.position-choices button {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 8px 10px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.position-choices button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: #edf1ff;
+  color: var(--accent);
+}
+.position-choices button:disabled,
+.save-track-notes:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.track-planning > input {
+  display: block;
+  width: 100%;
+  accent-color: var(--accent);
+  margin: 12px 0 5px;
+}
+.position-footer {
+  color: var(--muted);
+  font-size: 10px;
+}
+.track-notes {
+  margin-top: 10px;
+  font-size: 12px;
+}
+.track-notes summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+.track-notes summary span {
+  font-size: 10px;
+}
+.track-notes-body {
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+}
+.track-notes-body label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+}
+.track-notes-body textarea {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  width: 100%;
+  padding: 9px;
+  color: var(--foreground);
+  background: white;
+  font: inherit;
+  resize: vertical;
+}
+.save-track-notes {
+  justify-self: start;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--accent);
+  background: white;
+  padding: 8px 12px;
+  cursor: pointer;
+}

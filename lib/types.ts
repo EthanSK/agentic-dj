@@ -16,6 +16,10 @@ export interface Track {
   discovery?: TrackDiscovery;
   /** Agent-proposed running order, not proof that adjacent tracks mix cleanly. */
   setPlacement?: { rank: number; note: string };
+  /** User and agent context stay distinct; these are preferences, not action authority. */
+  notes?: { user?: string; agent?: string };
+  /** Ethan's rough beginning/middle/end hint, 0–100; never a fixed playlist slot. */
+  setPosition?: number;
   id: string;
   artist: string;
   title: string;
