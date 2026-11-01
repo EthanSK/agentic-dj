@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+- Separate shopping sessions while keeping global listening history.
+- Show discovery sources, full-track duration totals and recommended Keep order.
+- Browse saved tracks separately from the loaded player; load explicitly.
+- Add top play/pause, arrow-key navigation and tab-local recent-play recovery.
+- Split current and previous-session taste clues and simplify the listening layout.
+- Disable live source reloads by default so development cannot interrupt playback.
+- Add direct official Beatport previews while preserving legacy saved records.
+
 ## 0.3.2 — 2026-09-01
 
 - Made Web Audio teardown idempotent during React development remounts and hot replacement, preventing a duplicate `AudioContext.close()` rejection.

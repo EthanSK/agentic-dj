@@ -11,6 +11,9 @@ const { d1, r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === 'seatbelt';
+// A listening session must not reload because an agent edited a source file.
+// Developers can explicitly opt in on an isolated test server.
+const hotReload = process.env.AGENTIC_DJ_HOT_RELOAD === '1';
 
 const localBindingConfig = {
   main: 'vinext/server/fetch-handler',
@@ -47,8 +50,15 @@ export default defineConfig(async () => {
   const { cloudflare } = await import('@cloudflare/vite-plugin');
 
   return {
+    cacheDir: '.vinext/vite-cache',
     css: { postcss: { plugins: [tailwindcss()] } },
     server: {
+      hmr: hotReload,
+      watch: !hotReload
+        ? null
+        : isCodexSeatbeltSandbox
+          ? { useFsEvents: false, usePolling: true }
+          : {},
       host: '127.0.0.1',
       port: 4371,
       strictPort: true,
@@ -64,9 +74,6 @@ export default defineConfig(async () => {
           '**/.outstanding-items/**',
         ],
       },
-      ...(isCodexSeatbeltSandbox
-        ? { watch: { useFsEvents: false, usePolling: true } }
-        : {}),
     },
     plugins: [
       vinext(),

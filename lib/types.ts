@@ -1,6 +1,21 @@
 export type Verdict = 'keep' | 'pass' | 'later';
 export type Access = 'start-here' | 'deeper' | 'curveball';
+/** Discovery is where a suggestion came from, separately from its audio/store. */
+export interface TrackDiscovery {
+  source: 'spotify-likes' | 'agent' | 'rekordbox' | 'user';
+  basedOn?: 'past-likes' | 'birthday' | 'request';
+}
+/** One crate a track was part of. A track can belong to several rounds. */
+export interface RoundRef {
+  crateId: string;
+  title: string;
+  round?: number;
+}
 export interface Track {
+  rounds?: RoundRef[];
+  discovery?: TrackDiscovery;
+  /** Agent-proposed running order, not proof that adjacent tracks mix cleanly. */
+  setPlacement?: { rank: number; note: string };
   id: string;
   artist: string;
   title: string;
@@ -10,7 +25,7 @@ export interface Track {
   reason: string;
   setRole: string;
   accessibility: Access;
-  preview?: { provider: 'bandcamp' | 'spotify'; id: string };
+  preview?: { provider: 'bandcamp' | 'beatport' | 'spotify'; id: string };
   artwork?: string;
   seconds?: number;
   bpm?: number;
@@ -41,6 +56,8 @@ export interface Crate {
   round?: number;
   tracks: Track[];
 }
+/** A crate without its track bodies: the active round or a queued one. */
+export type CrateHeader = Omit<Crate, 'tracks'> & { trackIds: string[] };
 export interface TasteSignal {
   label: string;
   score: number;
@@ -56,6 +73,11 @@ export interface Vote {
   note: string;
   tags: string[];
   at: string;
+  /**
+   * Listening session that was current when this decision was made. Votes
+   * saved before sessions existed have none; they are attributed by date.
+   */
+  sessionId?: string;
 }
 export interface HistoryEntry {
   id: string;
@@ -65,15 +87,56 @@ export interface HistoryEntry {
   undone: boolean;
   at: string;
 }
+/**
+ * How a listening session began:
+ * - `inferred`: reconstructed from saved decision dates during the upgrade;
+ * - `automatic`: the first decision after more than 14 days away;
+ * - `manual`: the listener chose New session.
+ */
+export type SessionStart = 'inferred' | 'automatic' | 'manual';
+/**
+ * A listening and shopping period that can span several rounds. Sessions
+ * scope the buying shortlist; taste evidence still uses every decision.
+ */
+export interface ListeningSession {
+  id: string;
+  /** 1-based display number: Session 1, Session 2, … */
+  number: number;
+  startedAt: string;
+  /** Last genuine listening activity. Null for a new manual session. */
+  lastActivityAt: string | null;
+  start: SessionStart;
+  /** Crate IDs opened or listened to during this session, oldest first. */
+  roundIds: string[];
+  /** Plain explanation of any inference uncertainty. */
+  note?: string;
+}
+/** A prepared round waiting for the listener to open it explicitly. */
+export type QueuedRound = CrateHeader & { queuedAt: string };
 export interface Payload {
   schemaVersion: 1;
-  crate: Omit<Crate, 'tracks'> & { trackIds: string[] };
+  crate: CrateHeader;
   tracks: Record<string, Track>;
   votes: Record<string, Vote>;
   history: HistoryEntry[];
-  profile: { brief: string; avoid: string; seeds: string };
+  profile: {
+    brief: string;
+    avoid: string;
+    seeds: string;
+    requireBeatport?: boolean;
+  };
   requestIds: string[];
+  sessions: ListeningSession[];
+  queuedRounds: QueuedRound[];
 }
+/**
+ * The persisted shape. Installations saved before listening sessions have no
+ * `sessions` or `queuedRounds`; reads normalise them without writing, and the
+ * next ordinary mutation persists the result. Both fields are additive, so an
+ * older app version keeps them intact when it saves (it clones the payload).
+ */
+export type StoredPayload = Omit<Payload, 'sessions' | 'queuedRounds'> &
+  Partial<Pick<Payload, 'sessions' | 'queuedRounds'>>;
 export interface DeskState extends Payload {
   revision: number;
   updatedAt: string;

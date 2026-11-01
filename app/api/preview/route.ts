@@ -49,7 +49,12 @@ export async function GET(request: Request) {
       return json({ error: 'Invalid Bandcamp track ID.' }, 400);
     const trackId = validateBandcampTrackId(requestedId);
     const embedResponse = await fetch(bandcampEmbedUrl(trackId), {
-      headers: { Accept: 'text/html' },
+      headers: {
+        Accept: 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-GB,en;q=0.9',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140.0 Safari/537.36',
+      },
       signal: AbortSignal.timeout(10_000),
     });
     if (!embedResponse.ok)

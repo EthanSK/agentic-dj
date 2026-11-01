@@ -4,7 +4,7 @@
 
 [Website](https://ethansk.github.io/agentic-dj/) · [Run locally](#run-it) · [Agent workflow](docs/agent-workflow.md)
 
-Agentic DJ is a local listening desk for music discovery. An AI assistant can inspect music references you choose to share, research a ten-track round, and return verified track metadata. You listen through official players and mark **Keep**, **Pass**, or **Later**. The app turns those decisions into a provisional map of the genres and physical sound qualities you respond to. That evidence shapes the next ten—it is never permission to spend money.
+Agentic DJ is a local listening desk for music discovery. An AI assistant can inspect music references you choose to share, research a batch of any size, and return verified track metadata. You listen through official players and mark **Keep**, **Pass**, or **Later**. The app turns those decisions into a provisional map of the genres and physical sound qualities you respond to. That evidence shapes the next batch—it is never permission to spend money.
 
 This repository includes a ten-track calibration round spanning UK bass, garage, techno, dub, breakbeat, dancehall, and leftfield club music. It is designed for someone who can recognise the right bass, kick, groove, or feeling before they know the genre name. Every item has an official Bandcamp player and a source that was checked when the round was assembled.
 
@@ -36,26 +36,25 @@ Agentic DJ binds only to `127.0.0.1`. Do not expose it through a tunnel or deplo
 
 ### Listen and decide
 
-- Set the preview level, then select **Enable official preview** once. Previews never autoplay and start at 25%. Agentic DJ plays Bandcamp's official preview through Web Audio, so Chrome does not expose it to your computer's hardware play/pause keys.
-- Use the in-app play/pause button and scrub bar. The volume slider changes the live level without resetting the playhead.
-- Read the DJ facts beside each record: verified BPM, alternate tempo where useful, key, length, label, and release date. Missing or disputed data stays visibly marked instead of being guessed.
-- Use **Keep**, **Pass**, or **Later**, or the left / right / down arrow keys outside a player.
-- Open **Feedback** for optional tags and a note; open **Track details** for labels, release data, sound clues, store searches, and provenance.
-- Press `Z`, `Command+Z`, or **Undo** to reverse the latest applicable decision.
-- After all ten decisions, choose **Request 10 more from agent**. The app downloads a private request containing every previous answer and its cautious inferred taste map.
-- Give that request to an assistant, then import the returned ten-track crate as the new active round. Earlier tracks and decisions remain local evidence.
-- Export keeper CSV or JSON for a separate price-comparison and purchase-approval step.
+- Press **Play** in the track header or use the full player below it. Volume starts at 25%, and the volume and Keep sort are remembered.
+- Browse with **← / →**. If paused, the next track stays paused; if playing, it continues into the next track. Use **P / K / L** for Pass / Keep / Later and **Z** to undo.
+- The player stays on its loaded track when you browse Keep, Later, All or past sessions. Select a saved track and press **Load into player** to change it.
+- Read the source label: a Spotify discovery is different from a new agent recommendation. Audio uses official Beatport or Bandcamp previews through Web Audio, without a Spotify embed.
+- **Keep** defaults to a suggested set order. Switch to newest or oldest by the date you kept each track. Full-track duration totals follow the selected list and filters.
+- Session counts and CSV exports separate the current shopping list from older decisions. **Past sessions** keeps earlier history accessible. A gap longer than 14 days starts a new session on your next decision.
+- Expanded taste clues show **this session** and **previous sessions** separately. Feedback tags and notes help explain why a track works.
+- **Recent plays** remembers previews started in this browser tab. A manual reload restores the selected track without starting audio.
 
 ## Make it your own
 
-1. Listen through one ten-track round. You do not need to supply a genre name first.
-2. Use optional tags such as **Dopamine**, **Deep kick**, **Great bass**, **Cringe / cheesy**, or **Vocals put me off** when a plain Keep or Pass misses the reason.
-3. Review the visible **Earprint** as a provisional explanation, not a permanent taste label.
-4. Choose **Request 10 more from agent** and give the downloaded private request—and only the library exports you choose—to your preferred assistant.
-5. Ask it to follow [the agent workflow](docs/agent-workflow.md) and return exactly ten tracks as [crate JSON](docs/crate-format.md).
-6. Import the new round, listen, and repeat. Previous decisions stay available to the next request.
+1. Try the supplied demo, or give your preferred agent a few tracks, playlists or a read-only DJ-library export.
+2. Listen, then choose Keep, Pass or Later. You do not need a genre name first.
+3. Use **Ask your agent for more** to download the private brief. Ask for any number of tracks; ten is only the default.
+4. Have the agent follow [the workflow](docs/agent-workflow.md), verify exact store recordings and previews, and return [crate JSON](docs/crate-format.md).
+5. Import with **Append**. New tracks go after the unfinished queue; earlier tracks, rounds, sessions and decisions remain saved.
+6. Export the current session's Keeps for a separate store comparison and purchase decision.
 
-The request button prepares a file; this local app does not silently contact an AI service. The agent brief contains an explicit authority boundary: research and crate generation do not authorise account changes, carts, downloads, purchases, playlist edits, or Rekordbox imports.
+The app prepares an agent brief; it does not silently contact an AI service. A Keep is a listening choice, never permission to buy or change Rekordbox. Suggested set order is not a full-file beat-grid or transition check.
 
 ### Bring music references safely
 
@@ -73,16 +72,16 @@ The public `.gitignore` excludes local database files, music files, private prof
 
 ## Privacy and network behaviour
 
-Private state lives under `.agentic-dj/`. The app uses a local D1/SQLite database and does not use browser local storage, analytics, or telemetry. State mutations use a revision check, so a stale tab cannot silently overwrite a newer decision.
+Private state lives under `.agentic-dj/`. The app uses a local D1/SQLite database. Browser local storage holds volume and sort preferences; tab session storage holds listening position and recent plays. There is no analytics or telemetry. State mutations use a revision check, so a stale tab cannot silently overwrite a newer decision.
 
 The page makes these intentional third-party requests:
 
-- cover artwork loads from the release’s original Bandcamp or Spotify image host;
-- after you press play, the localhost server requests official Bandcamp preview metadata and audio;
-- imported Spotify preview IDs produce an explicit Spotify link rather than an embedded player; and
+- cover artwork loads from the release’s original Bandcamp, Beatport or Spotify image host;
+- when previews are enabled, the localhost server requests official Bandcamp preview metadata and audio;
+- official Beatport samples load directly from Beatport; legacy Spotify records never create a Spotify player; and
 - source / store links open the named external website when you click them.
 
-The server validates the requested Bandcamp track ID and the returned `bcbits.com` stream address, relays the official 128 kbps preview to the same-origin page, and sends `Cache-Control: no-store`. The browser decodes it in memory for Web Audio playback. Agentic DJ does not write preview audio to disk, offer an audio download, bypass provider limits, or retain the signed stream address.
+The server validates the requested Bandcamp track ID and the returned `bcbits.com` stream address, relays the official 128 kbps preview to the same-origin page, and sends `Cache-Control: no-store`. The browser decodes previews in memory for Web Audio playback. Beatport previews use their public sample URL directly. Agentic DJ does not write preview audio to disk, offer an audio download, bypass provider limits, or retain the signed stream address.
 
 Download a private-state JSON from **Tools** as an inspectable recovery snapshot. Automatic restoration is not provided; for a machine move, also stop the app and preserve the complete `.agentic-dj/` folder. Those files are private—do not attach them to a public issue.
 
@@ -144,6 +143,16 @@ The stack is React 19, Vinext/Vite, Cloudflare’s local runtime, D1/SQLite, Dri
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 - [Changelog](CHANGELOG.md)
+
+## Development without interrupting a listener
+
+`npm start` disables file watching and hot reload. Make and test changes in a separate checkout or staging directory; restart the listening server only when its preview is stopped. For an isolated development instance, explicitly enable live updates:
+
+```bash
+AGENTIC_DJ_HOT_RELOAD=1 AGENTIC_DJ_PORT=4379 npm start
+```
+
+Use a separate `AGENTIC_DJ_STATE_DIR` for test data. Run `npm test`, `npm run typecheck` and `npm run build` before installing changes. Never copy personal state into the public repository.
 
 ## License
 

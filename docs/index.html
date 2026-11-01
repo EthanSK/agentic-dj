@@ -7,13 +7,13 @@
     <meta name="description" content="A source-available local listening desk that turns every Keep, Pass and Later decision into better agent-assisted track discovery.">
     <meta name="theme-color" content="#16354a">
     <meta property="og:title" content="Agentic DJ">
-    <meta property="og:description" content="Listen to ten official previews, decide with your ears, then give your agent the full evidence for the next round.">
+    <meta property="og:description" content="Listen to official previews, decide with your ears, then give your agent the full evidence for the next round.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://ethansk.github.io/agentic-dj/">
     <link rel="canonical" href="https://ethansk.github.io/agentic-dj/">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="site.webmanifest">
-    <link rel="stylesheet" href="styles.css?v=1">
+    <link rel="stylesheet" href="styles.css?v=2">
   </head>
   <body>
     <header class="site-header">
@@ -23,9 +23,9 @@
     <main>
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow">Source available · local first · ten at a time</p>
+          <p class="eyebrow">Source available · local first · your ears, your crate</p>
           <h1 id="hero-title">Decide with your ears.<br>Let the evidence pick what comes next.</h1>
-          <p class="intro">Agentic DJ turns every Keep, Pass and Later decision into a private brief your AI assistant can use to research the next ten tracks.</p>
+          <p class="intro">Agentic DJ turns every Keep, Pass and Later decision into a private brief your AI assistant can use to research the next batch of tracks.</p>
           <div class="actions"><a class="primary" href="https://github.com/EthanSK/agentic-dj">GitHub</a><a class="secondary" href="#run">Run locally</a></div>
           <p class="host-note">This page describes the project. Your listening desk stays on your computer.</p>
         </div>
@@ -42,9 +42,17 @@
       <section class="workflow" id="how-it-works" aria-labelledby="workflow-title">
         <div class="section-heading"><div><p class="eyebrow">One listening loop</p><h2 id="workflow-title">Your taste is the dataset.</h2></div></div>
         <ol class="steps">
-          <li><span>01</span><h3>Listen</h3><p>Hear ten official previews with useful DJ facts beside each track.</p></li>
+          <li><span>01</span><h3>Listen</h3><p>Hear official previews with useful DJ facts beside each track.</p></li>
           <li><span>02</span><h3>Decide</h3><p>Mark Keep, Pass or Later, then add a reason only when it helps.</p></li>
           <li><span>03</span><h3>Go again</h3><p>Export one private brief containing every decision from every round so far.</p></li>
+        </ol>
+      </section>
+      <section class="workflow" aria-labelledby="desk-title">
+        <div class="section-heading"><div><p class="eyebrow">Built for a real listening session</p><h2 id="desk-title">Keep the groove. Keep your place.</h2></div></div>
+        <ol class="steps">
+          <li><span>01</span><h3>A player that stays put</h3><p>Browse your saved tracks without replacing what is playing. Load a track when you choose, and return to your place after a reload.</p></li>
+          <li><span>02</span><h3>One shopping session at a time</h3><p>See how many tracks you kept this time. Earlier sessions and their taste clues stay available, and new finds append to the queue.</p></li>
+          <li><span>03</span><h3>A starting point for your set</h3><p>Keep lists use a suggested running order, with date sorting, full-track duration totals and CSV export. You still check the mix.</p></li>
         </ol>
       </section>
       <section class="local" id="run" aria-labelledby="run-title">
@@ -52,10 +60,10 @@
         <section class="terminal" aria-label="Installation commands"><button type="button" class="terminal-copy" aria-label="Copy installation commands">Copy</button><pre><code>git clone https://github.com/EthanSK/agentic-dj.git
 cd agentic-dj
 npm ci
-npm start</code></pre><p>Then open <a href="http://127.0.0.1:4371">127.0.0.1:4371</a></p></section>
+npm start</code></pre><p>Requires Node.js 22.13 or newer, npm and Git. Then open <a href="http://127.0.0.1:4371">127.0.0.1:4371</a></p></section>
       </section>
     </main>
     <footer><p>Agentic DJ uses <a href="https://github.com/EthanSK/agentic-dj/blob/main/LICENSE">no-sale source terms</a>. Use and modify for yourself; selling the software requires a separate license. <a href="https://github.com/EthanSK/agentic-dj/blob/main/LICENSING.md">Scope and earlier permissions</a>.</p><a href="https://github.com/EthanSK/agentic-dj">Source code</a></footer>
-    <script src="script.js?v=1"></script>
+    <script src="script.js?v=2"></script>
   </body>
 </html>

@@ -9,8 +9,13 @@ import {
   ChevronRight,
   Disc3,
   Headphones,
+  History,
   Info,
   ListFilter,
+  ListMusic,
+  Plus,
+  Play,
+  Pause,
   RotateCcw,
   Search,
   Settings2,
@@ -22,12 +27,60 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { PreviewPlayer } from '@/components/preview-player';
+import { PreviewPlayer, usePreviewAudio } from '@/components/preview-player';
+import { DiscoveryBadge } from '@/components/discovery-badge';
+import {
+  readListeningCursor,
+  saveListeningCursor,
+  recentPlays,
+  type RecentPlay,
+} from '@/lib/listening-memory';
+import {
+  isKeepSort,
+  readKeepSort,
+  saveKeepSort,
+  sortKeepTracks,
+  totalDuration,
+  type KeepSort,
+} from '@/lib/keep-order';
+import {
+  isAuditionReady,
+  musicStoreLink,
+  playablePreviewId,
+} from '@/lib/preview-source';
 import { activeTracks, tasteMap, validateCrate } from '@/lib/domain';
+import {
+  allSessionsSummary,
+  decisionSessionIds,
+  listSessionSummaries,
+  type ScopeSummary,
+} from '@/lib/sessions';
 import { DEFAULT_PREVIEW_VOLUME, normalisePreviewVolume } from '@/lib/player';
-import type { Crate, DeskState, TasteMap, Track, Verdict } from '@/lib/types';
+import {
+  readPreviewPreferences,
+  savePreviewPreferences,
+} from '@/lib/preview-preferences';
+import type {
+  Crate,
+  DeskState,
+  QueuedRound,
+  RoundRef,
+  TasteMap,
+  Track,
+  Verdict,
+} from '@/lib/types';
 
 type View = 'unheard' | 'keep' | 'later' | 'all';
+type ImportMode = 'queue' | 'new-crate' | 'append';
+/**
+ * What the queue rail lists. `round` is the normal listening flow (the active
+ * round, with this session's Keeps under Keep). Past sessions can switch the
+ * rail to one session or to every session without touching playback.
+ */
+type RailScope =
+  | { kind: 'round' }
+  | { kind: 'session'; id: string }
+  | { kind: 'all' };
 const emptyTags: string[] = [];
 const feedbackTags = [
   'Dopamine',
@@ -75,33 +128,58 @@ function tempo(track: Track) {
     ? `${track.bpm} / ${track.alternateBpm}`
     : String(track.bpm);
 }
+function shortDate(value: string, withYear = false) {
+  return new Date(value).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    ...(withYear ? { year: 'numeric' } : {}),
+  });
+}
+/** "Since 29 Oct", "29 Oct – 1 Nov 2026", or the not-yet-started note. */
+function sessionDates(summary: ScopeSummary) {
+  if (!summary.startedAt) return 'Starts with your next decision';
+  if (summary.status === 'current')
+    return `Since ${shortDate(summary.startedAt, true)}`;
+  const end = summary.lastActivityAt ?? summary.startedAt;
+  const first = shortDate(summary.startedAt);
+  const last = shortDate(end, true);
+  return shortDate(summary.startedAt, true) === last
+    ? last
+    : `${first} – ${last}`;
+}
+/** "Round 13", "Rounds 2–12", or crate names for unnumbered rounds. */
+function roundsText(rounds: RoundRef[]) {
+  const numbers = [
+    ...new Set(rounds.flatMap((r) => (r.round != null ? [r.round] : []))),
+  ].sort((a, b) => a - b);
+  const parts: string[] = [];
+  if (numbers.length === 1) parts.push(`Round ${numbers[0]}`);
+  else if (numbers.length) {
+    const consecutive = numbers.every(
+      (value, index) => !index || value === numbers[index - 1] + 1,
+    );
+    parts.push(
+      consecutive
+        ? `Rounds ${numbers[0]}–${numbers.at(-1)}`
+        : `Rounds ${numbers.join(', ')}`,
+    );
+  }
+  parts.push(...rounds.filter((r) => r.round == null).map((r) => r.title));
+  return parts.join(' · ') || 'No rounds yet';
+}
+function roundName(round: { round?: number; title: string }) {
+  return round.round != null ? `Round ${round.round}` : round.title;
+}
 
-function Earprint({
-  map,
-  complete = false,
-}: {
-  map: TasteMap;
-  complete?: boolean;
-}) {
+function Earprint({ map }: { map: TasteMap; complete?: boolean }) {
   if (!map.decided)
     return (
       <div className="earprint-empty">
-        <strong>No genre homework.</strong>
-        <p>
-          Make a few decisions. This space will show what the records you keep
-          and pass have in common.
-        </p>
+        <p>No decisions yet.</p>
       </div>
     );
   return (
     <div className="earprint-map">
-      <p className="earprint-status">
-        {complete
-          ? 'Round decoded from your answers'
-          : map.decided < 3
-            ? 'Very early clues — keep listening'
-            : 'Provisional clues from your ears'}
-      </p>
       <div className="signal-group positive">
         <span>More like</span>
         <div>
@@ -110,7 +188,7 @@ function Earprint({
               <i key={`${signal.kind}-${signal.label}`}>{signal.label}</i>
             ))
           ) : (
-            <small>No positive pattern yet</small>
+            <small>None yet</small>
           )}
         </div>
       </div>
@@ -122,13 +200,10 @@ function Earprint({
               <i key={`${signal.kind}-${signal.label}`}>{signal.label}</i>
             ))
           ) : (
-            <small>No negative pattern yet</small>
+            <small>None yet</small>
           )}
         </div>
       </div>
-      <p className="earprint-footnote">
-        These are working clues, not permanent genre boxes.
-      </p>
     </div>
   );
 }
@@ -136,25 +211,57 @@ function Earprint({
 export function ListeningDesk() {
   const [state, setState] = useState<DeskState | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [browsedId, setBrowsedId] = useState<string | null>(null);
+  const pendingMainPlay = useRef<Track | null>(null);
   const [view, setView] = useState<View>('unheard');
   const [lane, setLane] = useState('all');
   const [query, setQuery] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [keepSort, setKeepSort] = useState<KeepSort>('recommended');
+  const [playHistory, setPlayHistory] = useState<RecentPlay[]>([]);
   const [playersAllowed, setPlayersAllowed] = useState(false);
   const [previewVolume, setPreviewVolume] = useState(DEFAULT_PREVIEW_VOLUME);
+  const previewAudio = usePreviewAudio({
+    enabled: playersAllowed,
+    volume: previewVolume,
+  });
+  const stopPreview = previewAudio.stop;
+  const loadedCrateId = useRef<string | null>(null);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [settings, setSettings] = useState(false);
+  const [sessionsOpen, setSessionsOpen] = useState(false);
+  const [confirmNewSession, setConfirmNewSession] = useState(false);
+  const sessionsButton = useRef<HTMLButtonElement | null>(null);
+  const closeSessions = useCallback(() => {
+    setSessionsOpen(false);
+    setConfirmNewSession(false);
+    sessionsButton.current?.focus({ preventScroll: true });
+  }, []);
+  const [scope, setScope] = useState<RailScope>({ kind: 'round' });
+  // Session staleness depends on the clock. It is refreshed whenever saved
+  // state arrives, so render stays pure and the server makes the real call.
+  const [now, setNow] = useState(0);
   const [drafts, setDrafts] = useState<
     Record<string, { note: string; tags: string[] }>
   >({});
   const [profile, setProfile] = useState({ brief: '', avoid: '', seeds: '' });
   const [importCrate, setImportCrate] = useState<Crate | null>(null);
-  const [importMode, setImportMode] = useState<'append' | 'new-crate'>(
-    'new-crate',
-  );
+  // Ethan's 'only add to the end': preserve the remaining queue on import.
+  const [importMode, setImportMode] = useState<ImportMode>('append');
   const swipe = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const saved = readPreviewPreferences();
+    // Hydrate after mount to keep server and initial client markup identical.
+    // oxlint-disable-next-line react/react-compiler
+    setPreviewVolume(saved.volume);
+    setPlayersAllowed(saved.playersAllowed);
+    setKeepSort(readKeepSort());
+    setPlayHistory(recentPlays());
+  }, []);
 
   const load = useCallback(async (initial = false) => {
     try {
@@ -165,11 +272,39 @@ export function ListeningDesk() {
         );
       const next: DeskState = await response.json();
       setState(next);
+      setNow(Date.now());
       setError('');
-      if (initial) {
+      // A crate changed somewhere else resets browsing, but not playback:
+      // round changes must leave a playing preview alone.
+      if (initial || loadedCrateId.current !== next.crate.id) {
         setProfile(next.profile);
-        setActiveId(next.crate.trackIds.find((id) => !next.votes[id]) || null);
+        setScope({ kind: 'round' });
+        const cursor = initial ? readListeningCursor(next.crate.id) : null;
+        const resume =
+          cursor &&
+          next.tracks[cursor.trackId] &&
+          isAuditionReady(next.tracks[cursor.trackId])
+            ? cursor
+            : null;
+        setView(resume?.view ?? 'unheard');
+        setLane('all');
+        setQuery('');
+        setActiveId((current) =>
+          !initial && current && next.tracks[current]
+            ? current
+            : (resume?.trackId ??
+              next.crate.trackIds.find(
+                (id) =>
+                  !next.votes[id] &&
+                  isAuditionReady(
+                    next.tracks[id],
+                    next.profile.requireBeatport,
+                  ),
+              ) ??
+              null),
+        );
       }
+      loadedCrateId.current = next.crate.id;
     } catch (e) {
       setError(
         e instanceof Error
@@ -182,14 +317,92 @@ export function ListeningDesk() {
     void load(true); // oxlint-disable-line react/react-compiler -- State changes occur only after the external API read resolves.
   }, [load]);
 
+  useEffect(() => {
+    if (state && activeId)
+      saveListeningCursor({ crateId: state.crate.id, trackId: activeId, view });
+  }, [state, activeId, view]);
+  useEffect(() => {
+    if (previewAudio.phase === 'playing') setPlayHistory(recentPlays()); // oxlint-disable-line react/react-compiler -- Read history after an actual preview start.
+  }, [previewAudio.phase, previewAudio.activeTrack?.trackId]);
+
   const changePreviewVolume = (value: number) => {
-    setPreviewVolume(normalisePreviewVolume(value));
+    const volume = normalisePreviewVolume(value);
+    setPreviewVolume(volume);
+    savePreviewPreferences({ volume });
   };
 
-  const tracks = useMemo(() => (state ? activeTracks(state) : []), [state]);
+  const changePlayersAllowed = (allowed: boolean) => {
+    setPlayersAllowed(allowed);
+    savePreviewPreferences({ playersAllowed: allowed });
+  };
+
+  const tracks = useMemo(
+    () =>
+      state
+        ? activeTracks(state).filter((t) =>
+            isAuditionReady(t, state.profile.requireBeatport),
+          )
+        : [],
+    [state],
+  );
+  // Newest first; [0] is the live session (current, or the next one when the
+  // last decision was more than 14 days ago).
+  const sessionList = useMemo(
+    () => (state ? listSessionSummaries(state, now) : []),
+    [state, now],
+  );
+  const liveSession: ScopeSummary | undefined = sessionList[0];
+  const everySession = useMemo(
+    () => (state ? allSessionsSummary(state) : null),
+    [state],
+  );
+  // Null means the normal round view.
+  const viewedScope: ScopeSummary | null =
+    scope.kind === 'all'
+      ? everySession
+      : scope.kind === 'session'
+        ? (sessionList.find((summary) => summary.id === scope.id) ?? null)
+        : null;
+  const scopeTracks = useMemo(
+    () =>
+      state && viewedScope
+        ? viewedScope.trackIds
+            .map((id) => state.tracks[id])
+            .filter(
+              (t) =>
+                t &&
+                isAuditionReady(
+                  t,
+                  viewedScope.status !== 'past' &&
+                    viewedScope.kind !== 'all' &&
+                    state.profile.requireBeatport,
+                ),
+            )
+        : tracks,
+    [state, viewedScope, tracks],
+  );
+  // Keep lists the viewed scope's Keeps, or this session's in the round view:
+  // the buying shortlist, not every Keep ever made.
+  const keptIds = (viewedScope ?? liveSession)?.keptIds;
+  const keepers = useMemo(
+    () =>
+      state && keptIds
+        ? keptIds
+            .map((id) => state.tracks[id])
+            .filter((t) => t && isAuditionReady(t))
+        : [],
+    [state, keptIds],
+  );
+  const queueTracks = useMemo(
+    () =>
+      view === 'keep'
+        ? sortKeepTracks(keepers, state?.votes ?? {}, keepSort)
+        : scopeTracks,
+    [view, keepers, state?.votes, keepSort, scopeTracks],
+  );
   const lanes = useMemo(
-    () => [...new Set(tracks.map((t) => t.lane))],
-    [tracks],
+    () => [...new Set(queueTracks.map((t) => t.lane))],
+    [queueTracks],
   );
   const counts = useMemo(
     () => ({
@@ -201,14 +414,36 @@ export function ListeningDesk() {
     }),
     [tracks, state],
   );
+  // Tab counts follow whatever the rail lists; `counts` stays round-only for
+  // round progress and the completed-round summary.
+  const listCounts = useMemo(
+    () => ({
+      later: scopeTracks.filter((t) => state?.votes[t.id]?.verdict === 'later')
+        .length,
+      unheard: scopeTracks.filter((t) => !state?.votes[t.id]).length,
+    }),
+    [scopeTracks, state],
+  );
   const inferredTaste = useMemo(
     () =>
       state ? tasteMap(state) : { decided: 0, positive: [], negative: [] },
     [state],
   );
+  const scopedTaste = useMemo(() => {
+    if (!state) return null;
+    const currentIds = new Set<string>();
+    const previousIds = new Set<string>();
+    for (const [trackId, sessionId] of decisionSessionIds(state)) {
+      (sessionId === liveSession?.id ? currentIds : previousIds).add(trackId);
+    }
+    return {
+      current: tasteMap(state, currentIds),
+      previous: tasteMap(state, previousIds),
+    };
+  }, [state, liveSession?.id]);
   const queue = useMemo(
     () =>
-      tracks.filter((t) => {
+      queueTracks.filter((t) => {
         const verdict = state?.votes[t.id]?.verdict;
         const matchView =
           view === 'all' || (view === 'unheard' ? !verdict : verdict === view);
@@ -220,9 +455,13 @@ export function ListeningDesk() {
             .includes(query.toLowerCase())
         );
       }),
-    [tracks, state, view, lane, query],
+    [queueTracks, state, view, lane, query],
   );
-  const track = activeId ? state?.tracks[activeId] : null;
+  const selectedTrack = activeId ? state?.tracks[activeId] : null;
+  const browsedTrack = browsedId ? state?.tracks[browsedId] : null;
+  const queueDuration = totalDuration(queue);
+  const track =
+    selectedTrack && isAuditionReady(selectedTrack) ? selectedTrack : null;
   const draft = activeId ? drafts[activeId] : undefined;
   const savedVote = activeId ? state?.votes[activeId] : undefined;
   const note = draft?.note ?? savedVote?.note ?? '';
@@ -235,6 +474,90 @@ export function ListeningDesk() {
   const decided = counts.keep + counts.pass + counts.later;
   const round = state?.crate.round || 1;
   const roundComplete = Boolean(tracks.length && counts.unheard === 0);
+  const nextPreviewTrack = useMemo(() => {
+    if (!track) return null;
+    const candidates = tracks
+      .slice(currentIndex + 1)
+      .filter((t) => !state?.votes[t.id]);
+    return (
+      candidates.find((candidate) => playablePreviewId(candidate.preview)) ||
+      null
+    );
+  }, [currentIndex, tracks, state, track]);
+  const preloadPreview = previewAudio.preload;
+  const togglePreview = previewAudio.toggle;
+  const playPreview = previewAudio.play;
+
+  function selectTrack(selected: Track) {
+    setActiveId(selected.id);
+    const previewId = playablePreviewId(selected.preview);
+    if (playersAllowed && previewId) {
+      void playPreview({
+        trackId: previewId,
+        recordId: selected.id,
+        title: selected.title,
+        artist: selected.artist,
+      });
+    } else {
+      stopPreview();
+    }
+  }
+
+  const navigatePlayer = useCallback(
+    (direction: number) => {
+      if (!tracks.length) return;
+      const index = tracks.findIndex((t) => t.id === track?.id);
+      const next = tracks[(index + direction + tracks.length) % tracks.length];
+      const wasPlaying = stopPreview();
+      setActiveId(next.id);
+      const previewId = playablePreviewId(next.preview);
+      if (wasPlaying && playersAllowed && previewId)
+        void playPreview({
+          trackId: previewId,
+          recordId: next.id,
+          title: next.title,
+          artist: next.artist,
+        });
+    },
+    [tracks, track?.id, stopPreview, playersAllowed, playPreview],
+  );
+
+  function toggleMainPreview() {
+    if (!track) return;
+    if (!playersAllowed) {
+      pendingMainPlay.current = track;
+      changePlayersAllowed(true);
+      return;
+    }
+    const previewId = playablePreviewId(track.preview);
+    if (previewId)
+      void togglePreview({
+        trackId: previewId,
+        recordId: track.id,
+        title: track.title,
+        artist: track.artist,
+      });
+  }
+
+  useEffect(() => {
+    const pending = pendingMainPlay.current;
+    if (!playersAllowed || !pending) return;
+    pendingMainPlay.current = null;
+    const previewId = playablePreviewId(pending.preview);
+    if (previewId)
+      void playPreview({
+        trackId: previewId,
+        recordId: pending.id,
+        title: pending.title,
+        artist: pending.artist,
+      });
+  }, [playersAllowed, playPreview]);
+
+  useEffect(() => {
+    if (!playersAllowed) return;
+    void preloadPreview(playablePreviewId(track?.preview));
+    void preloadPreview(playablePreviewId(nextPreviewTrack?.preview));
+  }, [nextPreviewTrack, playersAllowed, preloadPreview, track]);
 
   const command = useCallback(
     async (body: Record<string, unknown>): Promise<DeskState | null> => {
@@ -264,6 +587,9 @@ export function ListeningDesk() {
           );
         }
         setState(data);
+        setNow(Date.now());
+        // Our own round change is not an external one for a later reload.
+        loadedCrateId.current = data.crate.id;
         return data;
       } catch (e) {
         setError(
@@ -283,7 +609,7 @@ export function ListeningDesk() {
   const decide = useCallback(
     async (verdict: Verdict) => {
       if (!track) return;
-      const oldIndex = queue.findIndex((t) => t.id === track.id);
+      const oldIndex = tracks.findIndex((t) => t.id === track.id);
       const next = await command({
         type: 'vote',
         trackId: track.id,
@@ -292,6 +618,7 @@ export function ListeningDesk() {
         tags,
       });
       if (!next) return;
+      const wasPlaying = stopPreview();
       setDrafts((current) => {
         const updated = { ...current };
         delete updated[track.id];
@@ -300,51 +627,75 @@ export function ListeningDesk() {
       setNotice(
         `${verdict === 'keep' ? 'Kept' : verdict === 'pass' ? 'Passed' : 'Saved for later'} ${track.title} · saved locally.`,
       );
-      if (tracks.every((candidate) => next.votes[candidate.id])) {
+      // The completed-round handoff belongs to the round view. While browsing
+      // a session, deciding its last round track just moves along the list.
+      if (
+        !viewedScope &&
+        tracks.some((candidate) => !state?.votes[candidate.id]) &&
+        tracks.every((candidate) => next.votes[candidate.id])
+      ) {
         setView('unheard');
         setLane('all');
         setQuery('');
         setActiveId(null);
         return;
       }
-      const remaining = queue.filter(
-        (t) =>
-          t.id !== track.id &&
-          (view === 'all' ||
-            (view === 'unheard'
-              ? !next.votes[t.id]
-              : next.votes[t.id]?.verdict === view)),
+      const remaining = tracks.filter(
+        (t) => t.id !== track.id && !next.votes[t.id],
       );
-      setActiveId(
-        remaining[Math.min(Math.max(0, oldIndex), remaining.length - 1)]?.id ||
-          null,
-      );
+      const nextTrack =
+        remaining.find((t) => tracks.indexOf(t) > oldIndex) ?? remaining[0];
+      setActiveId(nextTrack?.id || null);
+      const nextPreviewId = playablePreviewId(nextTrack?.preview);
+      if (wasPlaying && nextTrack && nextPreviewId) {
+        void togglePreview({
+          trackId: nextPreviewId,
+          recordId: nextTrack.id,
+          title: nextTrack.title,
+          artist: nextTrack.artist,
+        });
+      }
     },
-    [track, tracks, queue, view, command, note, tags],
+    [
+      track,
+      tracks,
+      viewedScope,
+      command,
+      note,
+      tags,
+      stopPreview,
+      togglePreview,
+      state,
+    ],
   );
 
   const undo = useCallback(async () => {
     if (!lastDecision) return;
     const next = await command({ type: 'undo', eventId: lastDecision.id });
     if (next) {
+      stopPreview();
       setActiveId(lastDecision.trackId);
       setView('all');
       setLane('all');
       setQuery('');
       setNotice('Last decision undone · saved locally.');
     }
-  }, [lastDecision, command]);
+  }, [lastDecision, command, stopPreview]);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && sessionsOpen) {
+        event.preventDefault();
+        closeSessions();
+        return;
+      }
       const el = event.target as HTMLElement;
       if (
         event.repeat ||
         busyRef.current ||
         settings ||
-        el.closest(
-          'input, textarea, select, button, a, [contenteditable="true"]',
-        ) ||
+        sessionsOpen ||
+        el.closest('input, textarea, select, [contenteditable="true"]') ||
         event.altKey
       )
         return;
@@ -355,15 +706,20 @@ export function ListeningDesk() {
         }
         return;
       }
-      if (event.key === 'ArrowLeft') {
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault();
+        navigatePlayer(event.key === 'ArrowLeft' ? -1 : 1);
+        return;
+      }
+      if (event.key.toLowerCase() === 'p') {
         event.preventDefault();
         void decide('pass');
       }
-      if (event.key === 'ArrowRight') {
+      if (event.key.toLowerCase() === 'k') {
         event.preventDefault();
         void decide('keep');
       }
-      if (event.key === 'ArrowDown') {
+      if (event.key.toLowerCase() === 'l') {
         event.preventDefault();
         void decide('later');
       }
@@ -374,21 +730,14 @@ export function ListeningDesk() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [decide, undo, settings]);
+  }, [decide, undo, settings, sessionsOpen, closeSessions, navigatePlayer]);
 
   function pickView(nextView: View) {
     setView(nextView);
     setQuery('');
     setLane('all');
-    setActiveId(
-      tracks.find(
-        (t) =>
-          nextView === 'all' ||
-          (nextView === 'unheard'
-            ? !state?.votes[t.id]
-            : state?.votes[t.id]?.verdict === nextView),
-      )?.id || null,
-    );
+    // Browsing a list is not a request to replace the loaded record.
+    setBrowsedId(null);
   }
   async function readImport(file?: File) {
     setImportCrate(null);
@@ -414,15 +763,69 @@ export function ListeningDesk() {
     if (next) {
       setImportCrate(null);
       setSettings(false);
+      if (importMode === 'queue' || importMode === 'append') {
+        // The current round and selection stay exactly as they were.
+        setNotice(
+          importMode === 'append'
+            ? 'Tracks appended · saved locally.'
+            : 'Crate added to Up next · saved locally.',
+        );
+        return;
+      }
+      setScope({ kind: 'round' });
       setView('unheard');
       setLane('all');
       setQuery('');
-      setActiveId(next.crate.trackIds.find((id) => !next.votes[id]) || null);
       setNotice(
         'Crate imported. Existing decisions and previous tracks are preserved locally.',
       );
     }
   }
+  /**
+   * Show one session, every session or the round in the queue rail. The
+   * selected track and any playing preview stay as they are; only an
+   * explicit track pick changes what plays.
+   */
+  function viewScope(next: RailScope) {
+    setScope(next);
+    setView(next.kind === 'round' ? 'unheard' : 'keep');
+    setLane('all');
+    setQuery('');
+    closeSessions();
+  }
+  async function openRound(queued: QueuedRound) {
+    const next = await command({ type: 'open-round', crateId: queued.id });
+    if (!next) return;
+    // Opening a round changes the list only. The loaded record and audio stay
+    // together until the listener explicitly loads a track from that list.
+    setScope({ kind: 'round' });
+    setView('unheard');
+    setLane('all');
+    setQuery('');
+    setNotice(`Opened ${queued.title} · saved locally.`);
+  }
+  async function startNewSession() {
+    const next = await command({ type: 'new-session' });
+    if (!next) return;
+    setConfirmNewSession(false);
+    // Selection, filters and playback are untouched; old decisions stay in
+    // their own sessions.
+    const started = next.sessions.at(-1);
+    setNotice(
+      `${started ? `Session ${started.number}` : 'New session'} started · saved locally.`,
+    );
+  }
+
+  const savedLiveSession = state?.sessions.at(-1);
+  const nextSessionNumber =
+    liveSession?.status === 'next'
+      ? (liveSession.number ?? 1)
+      : (savedLiveSession?.number ?? 0) + 1;
+  // A manual session with no decisions yet cannot be followed by another.
+  const liveSessionEmpty =
+    liveSession?.status === 'current' &&
+    savedLiveSession?.lastActivityAt === null;
+  const activeRoundName = state ? roundName(state.crate) : '';
 
   return (
     <main className="desk-shell" data-preview-policy="web-audio-only">
@@ -433,20 +836,56 @@ export function ListeningDesk() {
             agentic<span className="wordmark-dj">dj</span>
           </span>
         </a>
-        <div className="crate-context" aria-label="Current crate progress">
+        {/* The session, not the round, is the shopping period: its Keep
+            count is the number Ethan asked to see at a glance. Round progress
+            stays in the queue rail. */}
+        <div className="crate-context" aria-label="Current session">
           <span className="local-badge">
             <i /> Local
           </span>
-          {state && (
+          {liveSession && (
             <>
-              <strong>Round {round}</strong>
-              <span>
-                {decided}/{tracks.length}
+              <strong
+                title={
+                  liveSession.status === 'next'
+                    ? 'More than 14 days since your last decision. Your next decision starts this session.'
+                    : undefined
+                }
+              >
+                {liveSession.label}
+              </strong>
+              <span className="session-when">
+                {liveSession.startedAt
+                  ? `since ${shortDate(liveSession.startedAt)}`
+                  : 'new'}
+              </span>
+              <span className="session-kept">
+                {liveSession.keptIds.length} kept
+              </span>
+              <span
+                className="session-progress"
+                title={`${liveSession.decided} of ${liveSession.trackIds.length} session tracks decided`}
+              >
+                {liveSession.decided}/{liveSession.trackIds.length}
               </span>
             </>
           )}
         </div>
         <div className="header-actions">
+          <Button
+            variant="ghost"
+            ref={sessionsButton}
+            title="Past sessions"
+            aria-expanded={sessionsOpen}
+            aria-controls="past-sessions"
+            onClick={() => {
+              setSessionsOpen(!sessionsOpen);
+              setConfirmNewSession(false);
+            }}
+          >
+            <History size={16} />
+            <span>Past sessions</span>
+          </Button>
           <Button
             variant="ghost"
             aria-expanded={settings}
@@ -456,9 +895,25 @@ export function ListeningDesk() {
             <Settings2 size={16} />
             <span>Tools</span>
           </Button>
-          <a className="export-button" href="/api/export?format=csv">
-            <ArrowDownToLine size={15} /> Keepers CSV
-            <span>{counts.keep}</span>
+          <a
+            className="export-button"
+            href={`/api/export?format=csv&session=current&sort=${keepSort}`}
+            title={
+              liveSession
+                ? `${liveSession.label} keepers. Past sessions has the rest.`
+                : undefined
+            }
+            aria-label={
+              liveSession
+                ? `Download ${liveSession.label} keepers as CSV`
+                : 'Download keepers as CSV'
+            }
+          >
+            <ArrowDownToLine size={15} />
+            <span className="export-label">Keepers CSV</span>
+            <span className="export-count">
+              {liveSession?.keptIds.length ?? 0}
+            </span>
           </a>
         </div>
       </header>
@@ -473,6 +928,138 @@ export function ListeningDesk() {
             <X size={16} />
           </button>
         </div>
+      )}
+
+      {sessionsOpen && state && liveSession && everySession && (
+        <section
+          id="past-sessions"
+          className="settings-panel sessions-panel"
+          aria-label="Listening sessions"
+        >
+          <div className="settings-title">
+            <div>
+              <p className="eyebrow">PRIVATE & LOCAL</p>
+              <h2>Sessions</h2>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Close sessions"
+              onClick={closeSessions}
+            >
+              <X size={18} />
+            </Button>
+          </div>
+          <p className="sessions-intro">
+            A new session starts when you return after more than 14 days. Taste
+            clues use every session.
+          </p>
+          <ol className="session-list">
+            {[...sessionList, everySession].map((summary) => {
+              const viewing =
+                summary.kind === 'all'
+                  ? scope.kind === 'all'
+                  : scope.kind === 'session' && scope.id === summary.id;
+              const exportScope =
+                summary.kind === 'all'
+                  ? 'all'
+                  : summary.status === 'past'
+                    ? summary.id
+                    : 'current';
+              return (
+                <li
+                  key={summary.id}
+                  className={`session-row ${summary.kind === 'all' ? 'every-session' : ''} ${viewing ? 'viewing' : ''}`}
+                >
+                  <button
+                    className="session-open"
+                    aria-pressed={viewing}
+                    aria-label={`Show ${summary.label} tracks`}
+                    onClick={() =>
+                      viewScope(
+                        summary.kind === 'all'
+                          ? { kind: 'all' }
+                          : { kind: 'session', id: summary.id },
+                      )
+                    }
+                  >
+                    <span className="session-name">
+                      <strong>{summary.label}</strong>
+                      {summary.status === 'current' && (
+                        <em className="session-badge">Current</em>
+                      )}
+                      {summary.status === 'next' && (
+                        <em className="session-badge">Next</em>
+                      )}
+                    </span>
+                    <span className="session-dates">
+                      {sessionDates(summary)}
+                    </span>
+                    <span className="session-rounds">
+                      {roundsText(summary.rounds)}
+                    </span>
+                    <span className="session-counts">
+                      <b>{summary.keptIds.length} kept</b> · {summary.decided}/
+                      {summary.trackIds.length} decided
+                    </span>
+                    {summary.start === 'inferred' && (
+                      <small className="session-note">
+                        Grouped from saved decision dates.
+                        {summary.note ? ` ${summary.note}` : ''}
+                      </small>
+                    )}
+                  </button>
+                  {summary.keptIds.length > 0 && (
+                    <a
+                      className="session-csv"
+                      href={`/api/export?format=csv&session=${exportScope}`}
+                      aria-label={`Download ${summary.label} keepers as CSV`}
+                    >
+                      <ArrowDownToLine size={13} /> CSV
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+          <div className="session-actions">
+            {confirmNewSession ? (
+              <fieldset
+                className="new-session-confirm"
+                aria-label="Confirm new session"
+              >
+                <p>
+                  Start Session {nextSessionNumber} now?
+                  {liveSession.status === 'current'
+                    ? ` ${liveSession.label} moves to past sessions.`
+                    : ''}
+                </p>
+                <Button disabled={busy} onClick={() => void startNewSession()}>
+                  Start Session {nextSessionNumber}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setConfirmNewSession(false)}
+                >
+                  Cancel
+                </Button>
+              </fieldset>
+            ) : (
+              <Button
+                variant="outline"
+                disabled={busy || liveSessionEmpty}
+                title={
+                  liveSessionEmpty
+                    ? `${liveSession.label} has no decisions yet`
+                    : undefined
+                }
+                onClick={() => setConfirmNewSession(true)}
+              >
+                <Plus size={15} /> New session
+              </Button>
+            )}
+          </div>
+        </section>
       )}
 
       {settings && (
@@ -551,9 +1138,16 @@ export function ListeningDesk() {
             <div className="crate-tools">
               <div className="tool-section">
                 <h3>Next round</h3>
-                <p>Export your decisions and taste clues for ten new tracks.</p>
-                <a className="text-action" href="/api/export?format=next">
-                  <ArrowDownToLine size={14} /> Prepare agent request
+                <p>
+                  Give this brief to your agent and ask for as many tracks as
+                  you want.
+                </p>
+                <a
+                  className="text-action"
+                  href="/api/export?format=next"
+                  aria-label="Download brief to ask your agent for more tracks"
+                >
+                  <ArrowDownToLine size={14} /> Ask your agent for more
                 </a>
               </div>
               <div className="tool-section">
@@ -578,9 +1172,12 @@ export function ListeningDesk() {
                       id="import-mode"
                       value={importMode}
                       onChange={(e) =>
-                        setImportMode(e.target.value as 'append' | 'new-crate')
+                        setImportMode(e.target.value as ImportMode)
                       }
                     >
+                      <option value="queue">
+                        Up next — keep the current round open
+                      </option>
                       <option value="new-crate">
                         New crate — preserve previous tracks and votes
                       </option>
@@ -632,36 +1229,45 @@ export function ListeningDesk() {
           <div className="workspace">
             <section className="audition" aria-label="Listen and decide">
               <div className="deck-top">
-                <div className="deck-position">
-                  <span>
-                    {track
-                      ? `${String(currentIndex + 1).padStart(2, '0')} / ${tracks.length}`
-                      : `${decided} / ${tracks.length}`}
-                  </span>
-                  <strong>{track?.lane || state.crate.title}</strong>
+                <div className="deck-meta">
+                  <div className="deck-position">
+                    <span>
+                      {track
+                        ? `${currentIndex >= 0 ? String(currentIndex + 1).padStart(2, '0') : '—'} / ${tracks.length}`
+                        : `${decided} / ${tracks.length}`}
+                    </span>
+                    <strong>{track?.lane || state.crate.title}</strong>
+                  </div>
+                  {track && <DiscoveryBadge track={track} />}
                 </div>
                 {track && (
                   <div className="browse-buttons">
                     <button
                       aria-label="Browse previous track without deciding"
-                      disabled={busy || !queue.length}
-                      onClick={() => {
-                        const i = queue.findIndex((t) => t.id === track.id);
-                        setActiveId(
-                          queue[(i - 1 + queue.length) % queue.length]?.id ||
-                            null,
-                        );
-                      }}
+                      disabled={busy || !tracks.length}
+                      onClick={() => navigatePlayer(-1)}
                     >
                       <ChevronLeft size={18} />
                     </button>
                     <button
+                      aria-label={
+                        previewAudio.phase === 'playing'
+                          ? 'Pause preview'
+                          : 'Play preview'
+                      }
+                      disabled={previewAudio.phase === 'loading'}
+                      onClick={toggleMainPreview}
+                    >
+                      {previewAudio.phase === 'playing' ? (
+                        <Pause size={17} />
+                      ) : (
+                        <Play size={17} />
+                      )}
+                    </button>
+                    <button
                       aria-label="Browse next track without deciding"
-                      disabled={busy || !queue.length}
-                      onClick={() => {
-                        const i = queue.findIndex((t) => t.id === track.id);
-                        setActiveId(queue[(i + 1) % queue.length]?.id || null);
-                      }}
+                      disabled={busy || !tracks.length}
+                      onClick={() => navigatePlayer(1)}
                     >
                       <ChevronRight size={18} />
                     </button>
@@ -704,7 +1310,6 @@ export function ListeningDesk() {
                       </div>
                     )}
                     <div className="record-info">
-                      <span className="lane">{track.lane}</span>
                       <h1>{track.title}</h1>
                       <p className="artist">{track.artist}</p>
                       <dl className="dj-facts" aria-label="DJ track facts">
@@ -734,8 +1339,8 @@ export function ListeningDesk() {
                     </div>
                   </div>
 
-                  <div className="player-shell" key={track.id}>
-                    {track.preview?.provider === 'bandcamp' && (
+                  <div className="player-shell">
+                    {playablePreviewId(track.preview) && (
                       <div className="preview-mixer">
                         {previewVolume === 0 ? (
                           <VolumeX size={17} aria-hidden="true" />
@@ -759,56 +1364,28 @@ export function ListeningDesk() {
                         <output htmlFor={`preview-volume-${track.id}`}>
                           {previewVolume}%
                         </output>
-                        <small aria-live="polite">
-                          {previewVolume === 0
-                            ? 'Muted'
-                            : playersAllowed
-                              ? 'Live level'
-                              : 'Starts quiet'}
-                        </small>
                       </div>
                     )}
                     <div className="player-stage">
-                      {playersAllowed && track.preview ? (
-                        track.preview.provider === 'bandcamp' ? (
-                          <PreviewPlayer
-                            key={track.id}
-                            trackId={track.preview.id}
-                            title={track.title}
-                            artist={track.artist}
-                            volume={previewVolume}
-                          />
-                        ) : (
-                          <div className="no-preview">
-                            Spotify embeds take hardware media keys.{' '}
-                            <a
-                              href={`https://open.spotify.com/track/${track.preview.id}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              Listen on Spotify ↗
-                            </a>
-                          </div>
-                        )
-                      ) : track.preview ? (
+                      {playersAllowed && playablePreviewId(track.preview) ? (
+                        <PreviewPlayer
+                          recordId={track.id}
+                          trackId={playablePreviewId(track.preview)!}
+                          title={track.title}
+                          artist={track.artist}
+                          audio={previewAudio}
+                        />
+                      ) : playablePreviewId(track.preview) ? (
                         <button
                           className="load-player"
-                          onClick={() => setPlayersAllowed(true)}
+                          onClick={() => changePlayersAllowed(true)}
                         >
                           <Headphones size={19} />
-                          {track.preview.provider === 'bandcamp'
-                            ? 'Enable official preview'
-                            : 'Show Spotify link'}
-                          <span>
-                            {track.preview.provider === 'bandcamp'
-                              ? 'No autoplay · hardware keys ignored'
-                              : 'No embedded player'}
-                          </span>
+                          Enable official preview
+                          <span>No autoplay · hardware keys ignored</span>
                         </button>
                       ) : (
-                        <div className="no-preview">
-                          No embedded preview. Use the source link below.
-                        </div>
+                        <div className="no-preview">No preview available.</div>
                       )}
                     </div>
                   </div>
@@ -816,11 +1393,11 @@ export function ListeningDesk() {
                   <div className="source-row">
                     <a
                       className="source-link"
-                      href={track.sourceUrl}
+                      href={musicStoreLink(track).url}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {track.sourceName} <ArrowUpRight size={14} />
+                      {musicStoreLink(track).name} <ArrowUpRight size={14} />
                     </a>
                     <span className="price-label">{money(track)}</span>
                   </div>
@@ -831,21 +1408,21 @@ export function ListeningDesk() {
                       disabled={busy}
                       onClick={() => void decide('pass')}
                     >
-                      <X /> Pass <kbd>←</kbd>
+                      <X /> Pass <kbd>P</kbd>
                     </Button>
                     <Button
                       className="decision later"
                       disabled={busy}
                       onClick={() => void decide('later')}
                     >
-                      <SkipForward /> Later <kbd>↓</kbd>
+                      <SkipForward /> Later <kbd>L</kbd>
                     </Button>
                     <Button
                       className="decision keep"
                       disabled={busy}
                       onClick={() => void decide('keep')}
                     >
-                      <Check /> Keep <kbd>→</kbd>
+                      <Check /> Keep <kbd>K</kbd>
                     </Button>
                   </div>
 
@@ -965,7 +1542,7 @@ export function ListeningDesk() {
                             YouTube ↗
                           </a>
                           {playersAllowed && (
-                            <button onClick={() => setPlayersAllowed(false)}>
+                            <button onClick={() => changePlayersAllowed(false)}>
                               Disable preview
                             </button>
                           )}
@@ -1006,13 +1583,34 @@ export function ListeningDesk() {
                             : 'Decisions save locally')}
                     </output>
                   </div>
+                  {playHistory.length > 0 && (
+                    <details className="recent-plays">
+                      <summary>
+                        <History size={13} /> Recent plays
+                      </summary>
+                      <div>
+                        {playHistory.map((entry) => {
+                          const played = state.tracks[entry.trackId];
+                          return played ? (
+                            <button
+                              key={entry.trackId}
+                              onClick={() => selectTrack(played)}
+                            >
+                              {played.title}
+                              <small>{played.artist}</small>
+                            </button>
+                          ) : null;
+                        })}
+                      </div>
+                    </details>
+                  )}
                 </>
               ) : (
                 <div className="crate-finished">
                   <Disc3 size={50} strokeWidth={1} />
                   <h1>
                     {roundComplete
-                      ? `Round ${round} decoded.`
+                      ? `Round ${round} complete`
                       : 'Pick a record.'}
                   </h1>
                   <p>
@@ -1026,20 +1624,37 @@ export function ListeningDesk() {
                     </div>
                   )}
                   <div>
+                    {roundComplete && state.queuedRounds[0] && (
+                      <button
+                        className="request-next"
+                        disabled={busy}
+                        onClick={() => void openRound(state.queuedRounds[0])}
+                      >
+                        <ListMusic size={18} />
+                        <span>
+                          Open next round
+                          <small>
+                            {roundName(state.queuedRounds[0])} ·{' '}
+                            {
+                              state.queuedRounds[0].trackIds.filter(
+                                (id) => !state.votes[id],
+                              ).length
+                            }{' '}
+                            to hear
+                          </small>
+                        </span>
+                      </button>
+                    )}
                     {roundComplete ? (
                       <a
-                        className="request-next"
+                        className={`request-next${state.queuedRounds.length ? ' secondary' : ''}`}
                         href="/api/export?format=next"
-                        onClick={() =>
-                          setNotice(
-                            'Next-round request prepared from your answers.',
-                          )
-                        }
+                        aria-label="Download brief to ask your agent for more tracks"
                       >
                         <ArrowDownToLine size={18} />
                         <span>
-                          Request 10 more
-                          <small>Uses every answer</small>
+                          Ask your agent for more
+                          <small>Download brief, then ask for any number</small>
                         </span>
                       </a>
                     ) : (
@@ -1065,35 +1680,17 @@ export function ListeningDesk() {
                       <RotateCcw size={14} /> Undo last decision
                     </button>
                   </div>
-                  <p className="quiet-note">
-                    Saved locally · nothing purchased
-                  </p>
                 </div>
               )}
             </section>
 
             <aside className="crate-rail" aria-label="Track queue">
-              <div className="rail-heading">
-                <div>
-                  <span>Round {round}</span>
-                  <strong>{state.crate.title}</strong>
-                </div>
-                <b>
-                  {decided}/{tracks.length}
-                </b>
-              </div>
-              <progress
-                className="crate-progress"
-                value={decided}
-                max={tracks.length}
-                aria-label={`${decided} of ${tracks.length} tracks decided`}
-              />
               <fieldset className="rail-tabs" aria-label="Filter by decision">
                 {(
                   [
-                    ['unheard', `To hear ${counts.unheard}`],
-                    ['keep', `Keep ${counts.keep}`],
-                    ['later', `Later ${counts.later}`],
+                    ['unheard', `To hear ${listCounts.unheard}`],
+                    ['keep', `Keep ${keepers.length}`],
+                    ['later', `Later ${listCounts.later}`],
                     ['all', 'All'],
                   ] as const
                 ).map(([value, label]) => (
@@ -1107,15 +1704,137 @@ export function ListeningDesk() {
                   </button>
                 ))}
               </fieldset>
-              <details
-                className="queue-filters"
-                open={query || lane !== 'all' ? true : undefined}
-              >
-                <summary>
+              {viewedScope ? (
+                <>
+                  <div className="rail-heading">
+                    <div>
+                      <span>{viewedScope.label}</span>
+                      <strong>{sessionDates(viewedScope)}</strong>
+                    </div>
+                    <b>{viewedScope.keptIds.length} kept</b>
+                  </div>
+                  <p className="round-description">
+                    {roundsText(viewedScope.rounds)}
+                  </p>
+                  <progress
+                    className="crate-progress"
+                    value={viewedScope.decided}
+                    max={viewedScope.trackIds.length || 1}
+                    aria-label={`${viewedScope.decided} of ${viewedScope.trackIds.length} tracks decided`}
+                  />
+                  <button
+                    className="scope-back"
+                    onClick={() => viewScope({ kind: 'round' })}
+                  >
+                    <ChevronLeft size={14} /> Back to {activeRoundName}
+                  </button>
+                </>
+              ) : view === 'unheard' ? (
+                <>
+                  <div className="rail-heading">
+                    <div>
+                      <span>Round {round}</span>
+                      <strong>{state.crate.title}</strong>
+                    </div>
+                    <b>
+                      {decided}/{tracks.length}
+                    </b>
+                  </div>
+                  <p className="round-description">{state.crate.description}</p>
+                  <progress
+                    className="crate-progress"
+                    value={decided}
+                    max={tracks.length}
+                    aria-label={`${decided} of ${tracks.length} tracks decided`}
+                  />
+                  {state.queuedRounds.length > 0 && (
+                    <div className="up-next" aria-label="Up next">
+                      <span className="up-next-label">Up next</span>
+                      {state.queuedRounds.slice(0, 3).map((queued) => {
+                        const toHear = queued.trackIds.filter(
+                          (id) => !state.votes[id],
+                        ).length;
+                        return (
+                          <div className="up-next-row" key={queued.id}>
+                            <div>
+                              <small>{roundName(queued)}</small>
+                              <strong>{queued.title}</strong>
+                              <small>
+                                {toHear} to hear · {queued.trackIds.length}{' '}
+                                tracks
+                              </small>
+                            </div>
+                            <button
+                              disabled={busy}
+                              aria-label={`Open ${queued.title}`}
+                              title={
+                                counts.unheard
+                                  ? `${activeRoundName} moves to Up next with ${counts.unheard} to hear`
+                                  : undefined
+                              }
+                              onClick={() => void openRound(queued)}
+                            >
+                              Open
+                            </button>
+                          </div>
+                        );
+                      })}
+                      {state.queuedRounds.length > 3 && (
+                        <small>
+                          {state.queuedRounds.length - 3} more in Up next
+                        </small>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="rail-heading">
+                  <div>
+                    <span>{liveSession?.label || 'This session'}</span>
+                    <strong>
+                      {view === 'keep'
+                        ? 'Kept tracks'
+                        : view === 'later'
+                          ? 'Saved for later'
+                          : 'All tracks'}
+                    </strong>
+                  </div>
+                  <b>{queue.length}</b>
+                </div>
+              )}
+
+              <div className="queue-tools">
+                <button
+                  className="queue-filter-toggle"
+                  aria-expanded={filtersOpen}
+                  aria-controls="queue-filter-body"
+                  onClick={() => setFiltersOpen(!filtersOpen)}
+                >
                   <ListFilter size={14} /> Filter tracks
                   {(query || lane !== 'all') && <span>Active</span>}
-                </summary>
-                <div className="queue-filter-body">
+                  <Plus size={13} aria-hidden="true" />
+                </button>
+                {view === 'keep' && (
+                  <select
+                    className="keep-sort"
+                    aria-label="Sort kept tracks"
+                    title="Recommended order is a suggested set, not checked transitions. Date added is when you kept the track."
+                    value={keepSort}
+                    onChange={(e) => {
+                      if (isKeepSort(e.target.value)) {
+                        setKeepSort(e.target.value);
+                        saveKeepSort(e.target.value);
+                      }
+                    }}
+                  >
+                    <option value="recommended">Recommended set order</option>
+                    <option value="newest">Date added — newest</option>
+                    <option value="oldest">Date added — oldest</option>
+                  </select>
+                )}
+              </div>
+              {filtersOpen && (
+                <div id="queue-filter-body" className="queue-filter-body">
                   <div className="queue-search">
                     <Search size={14} />
                     <Input
@@ -1139,22 +1858,31 @@ export function ListeningDesk() {
                     ))}
                   </select>
                 </div>
-              </details>
+              )}
               <div className="queue-list">
                 {queue.length ? (
                   queue.map((t) => {
                     const verdict = state.votes[t.id]?.verdict;
                     return (
                       <button
-                        className={`queue-track ${activeId === t.id ? 'selected' : ''} ${verdict ? `verdict-${verdict}` : ''}`}
+                        className={`queue-track ${(view === 'unheard' ? activeId : browsedId) === t.id ? 'selected' : ''} ${verdict ? `verdict-${verdict}` : ''}`}
                         key={t.id}
                         aria-current={activeId === t.id ? 'true' : undefined}
-                        onClick={() => setActiveId(t.id)}
+                        title={
+                          view === 'keep' && keepSort === 'recommended'
+                            ? t.setPlacement?.note
+                            : undefined
+                        }
+                        onClick={() =>
+                          view === 'unheard'
+                            ? selectTrack(t)
+                            : setBrowsedId(t.id)
+                        }
                         disabled={busy}
                       >
                         <span>
                           {String(
-                            tracks.findIndex((x) => x.id === t.id) + 1,
+                            queueTracks.findIndex((x) => x.id === t.id) + 1,
                           ).padStart(2, '0')}
                         </span>
                         {t.artwork ? (
@@ -1169,7 +1897,10 @@ export function ListeningDesk() {
                         )}
                         <div>
                           <strong>{t.title}</strong>
-                          <small>{t.artist}</small>
+                          <small className="queue-artist">
+                            <span>{t.artist}</span>
+                          </small>
+                          <DiscoveryBadge track={t} inline />
                         </div>
                         {verdict === 'keep' ? (
                           <Check size={15} aria-label="Kept" />
@@ -1207,12 +1938,58 @@ export function ListeningDesk() {
                   </div>
                 )}
               </div>
-              <details className="earprint-card">
+              {view !== 'unheard' && queue.length > 0 && (
+                <div className="load-selection">
+                  <div>
+                    {browsedTrack ? (
+                      <>
+                        <strong>{browsedTrack.title}</strong>
+                        <small>{browsedTrack.artist}</small>
+                      </>
+                    ) : (
+                      <span>Select a track</span>
+                    )}
+                  </div>
+                  <Button
+                    disabled={!browsedTrack || busy}
+                    onClick={() => browsedTrack && selectTrack(browsedTrack)}
+                  >
+                    Load into player
+                  </Button>
+                </div>
+              )}
+              <div
+                className="queue-duration"
+                aria-live="polite"
+                title="Full track lengths, not preview lengths."
+              >
+                <span>
+                  {queueDuration.missing ? 'Known duration' : 'Total duration'}
+                </span>
+                <strong>{queueDuration.label}</strong>
+                <small>
+                  {queue.length} tracks
+                  {queueDuration.missing
+                    ? ` · ${queueDuration.missing} durations missing`
+                    : ''}
+                </small>
+              </div>
+              <details className="earprint-card" open>
                 <summary>
-                  Taste clues <span>{inferredTaste.decided}</span>
+                  Taste clues · this session{' '}
+                  <span>{scopedTaste?.current.decided ?? 0}</span>
                 </summary>
                 <div className="earprint-body">
-                  <Earprint map={inferredTaste} complete={roundComplete} />
+                  {scopedTaste && <Earprint map={scopedTaste.current} />}
+                </div>
+              </details>
+              <details className="earprint-card" open>
+                <summary>
+                  Taste clues · previous sessions{' '}
+                  <span>{scopedTaste?.previous.decided ?? 0}</span>
+                </summary>
+                <div className="earprint-body">
+                  {scopedTaste && <Earprint map={scopedTaste.previous} />}
                 </div>
               </details>
             </aside>

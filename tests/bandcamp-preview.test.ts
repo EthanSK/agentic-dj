@@ -46,3 +46,26 @@ void test('the listening path has no controllable media element or Media Session
   assert.match(player, /new AudioContext\(\)/);
   assert.doesNotMatch(source, /<audio|<iframe|mediaSession|setActionHandler/);
 });
+
+void test('preview audio persists above the track card and preloads the next track', () => {
+  const player = readFileSync(
+    new URL('../components/preview-player.tsx', import.meta.url),
+    'utf8',
+  );
+  const desk = readFileSync(
+    new URL('../components/listening-desk.tsx', import.meta.url),
+    'utf8',
+  );
+  assert.match(player, /export function usePreviewAudio/);
+  assert.match(player, /pendingRef\.current\.get\(trackId\)/);
+  assert.match(player, /data-buffered-track-ids/);
+  assert.match(player, /const stop = useCallback/);
+  assert.match(desk, /const previewAudio = usePreviewAudio/);
+  assert.match(desk, /nextPreviewTrack/);
+  assert.match(
+    desk,
+    /void preloadPreview\(playablePreviewId\(nextPreviewTrack\?\.preview\)\)/,
+  );
+  assert.match(desk, /stopPreview\(\)/);
+  assert.doesNotMatch(desk, /<PreviewPlayer\s+key=/);
+});

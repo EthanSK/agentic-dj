@@ -44,6 +44,18 @@ For each candidate:
 6. check the owned-library reference for likely duplicates; and
 7. write a short, original reason and possible set role.
 
+Record where each suggestion came from in its `discovery` field. A track from
+Spotify Liked Songs stays a Spotify discovery even when its preview and purchase
+link are Beatport. A new agent recommendation based on earlier choices uses
+`source: "agent", basedOn: "past-likes"`. Use `rekordbox` for library-inspired
+choices and `user` for directly supplied tracks. Never infer this from the store;
+keep existing discovery when refreshing metadata.
+
+Give each new candidate a `setPlacement` rank and short note for the proposed
+party running order. Compare energy, arrangement, style and reliable tempo/key
+information. Leave the unheard queue in append order; the Keep list and its
+exports use these ranks. These are suggestions, not verified transitions.
+
 Drop ambiguous bootlegs, unofficial uploads, unavailable dubs, fabricated catalogue details, and records that merely duplicate the obvious anchors. Design the round as an experiment rather than a genre list: choose the two least-resolved sound dimensions, put at least two tracks on each side of each, and give every track one intended contrast in its reason or set role. A useful default is six close candidates, three adjacent candidates, and one deliberate far-out probe.
 
 The included `scripts/bandcamp.mjs` reads public release metadata without downloading audio:
@@ -71,13 +83,15 @@ Do not treat:
 - one rejected artist as a permanent ban; or
 - a keeper’s genre label as the only reason it worked.
 
-After all ten decisions, the user chooses **Request 10 more from agent**. The downloaded private brief contains the entire decision history, the current profile, already suggested recordings, and a cautious inferred taste map. The button prepares a request; the local app does not contact an AI service itself.
+The user chooses **Ask your agent for more** and requests any number of tracks. The downloaded private brief contains the entire decision history, the current shopping session, the profile, already suggested recordings, and a cautious inferred taste map. The button prepares a request; the local app does not contact an AI service itself.
 
-Return exactly ten tracks as a new active crate. Importing it preserves earlier tracks, votes, and notes, so each round can use all prior evidence while still allowing the user to correct a bad inference.
+Return the requested number of tracks. Import with mode `append`: keep all remaining tracks in their existing order and add the new ones at the end. Change the active queue only when the user explicitly asks. A new listening session scopes the buying shortlist; it does not discard unfinished tracks or the global taste history.
+
+When the saved profile has `requireBeatport: true`, new discoveries need an exact Beatport track page and a working official Beatport preview. A search link is not a verified recording. Keep unresolved records out of the audition queue without deleting their history or turning missing audio into a Pass.
 
 ## 6. Price-check keepers
 
-Only after listening, export keeper JSON/CSV. Compare the exact recording at legitimate stores such as the artist/label’s Bandcamp, Beatport, Juno Download, Qobuz, Bleep, or Boomkat where applicable.
+Only after listening, export keeper JSON/CSV. Exports default to the current listening session; `session=all` includes all previous Keeps. Check ownership before buying from any session. Compare the exact recording at legitimate stores such as the artist/label’s Bandcamp, Beatport, Juno Download, Qobuz, Bleep, or Boomkat where applicable.
 
 Report:
 

@@ -8,15 +8,87 @@ import {
   ConflictError,
   csvCell,
   initialPayload,
+  keptTracks,
   normaliseIdentity,
   safeMusicUrl,
   shortlistCsv,
   tasteMap,
   validateCrate,
 } from '../lib/domain.ts';
+import { allSessionsSummary } from '../lib/sessions.ts';
 
 const request = (suffix: string) => `request-${suffix}-0001`;
 const firstTrackId = demo.tracks[0].id;
+void test('round provenance survives reimports and exports', () => {
+  const first = initialPayload(demo);
+  const secondCrate = {
+    ...demo,
+    id: 'second-round',
+    title: 'Second round',
+    round: 2,
+  };
+  const second = applyCommand(first, {
+    type: 'import',
+    mode: 'new-crate',
+    crate: secondCrate,
+    requestId: request('rounds'),
+  });
+  assert.deepEqual(
+    second.tracks[firstTrackId].rounds?.map((r) => r.round),
+    [1, 2],
+  );
+  const restored = applyCommand(second, {
+    type: 'record-rounds',
+    crates: [demo, demo],
+    requestId: request('recover'),
+  });
+  assert.equal(restored.tracks[firstTrackId].rounds?.length, 2);
+  assert.deepEqual(restored.crate, second.crate);
+  assert.deepEqual(restored.votes, second.votes);
+  assert.deepEqual(restored.profile, second.profile);
+  assert.deepEqual(restored.history, second.history);
+  const voted = applyCommand(restored, {
+    type: 'vote',
+    trackId: firstTrackId,
+    verdict: 'keep',
+    requestId: request('round-vote'),
+  });
+  assert.match(shortlistCsv(voted, allSessionsSummary(voted)), /Round numbers/);
+  assert.match(shortlistCsv(voted, allSessionsSummary(voted)), /1; 2/);
+  assert.deepEqual(
+    validateCrate({ ...demo, tracks: [voted.tracks[firstTrackId]] }).tracks[0]
+      .rounds,
+    voted.tracks[firstTrackId].rounds,
+  );
+  const bad = {
+    ...demo,
+    tracks: [{ ...demo.tracks[0], artist: 'Different recording' }],
+  };
+  assert.throws(() =>
+    applyCommand(restored, {
+      type: 'record-rounds',
+      crates: [bad],
+      requestId: request('bad-round'),
+    }),
+  );
+  assert.deepEqual(
+    first.tracks[firstTrackId].rounds?.map((r) => r.round),
+    [1],
+  );
+  const legacy = structuredClone(first);
+  for (const track of Object.values(legacy.tracks)) delete track.rounds;
+  const upgraded = applyCommand(legacy, {
+    type: 'import',
+    mode: 'new-crate',
+    crate: secondCrate,
+    requestId: request('legacy-round'),
+  });
+  assert.deepEqual(
+    upgraded.tracks[firstTrackId].rounds?.map((r) => r.round),
+    [1, 2],
+  );
+  assert.match(agentBrief(voted), /Second round/);
+});
 void test('the bundled crate validates without mutating it', () => {
   const before = JSON.stringify(demo);
   const crate = validateCrate(demo);
@@ -140,6 +212,14 @@ void test('imports retain old tracks and votes and reject identity collisions', 
   assert.equal(next.votes[firstTrackId].verdict, 'keep');
   assert.ok(next.tracks[firstTrackId]);
   assert.deepEqual(
+    keptTracks(next).map((track) => track.id),
+    [firstTrackId],
+  );
+  assert.match(
+    shortlistCsv(next, allSessionsSummary(next)),
+    new RegExp(demo.tracks[0].artist),
+  );
+  assert.deepEqual(
     next.crate.trackIds,
     crate.tracks.map((track) => track.id),
   );
@@ -155,6 +235,51 @@ void test('imports retain old tracks and votes and reject identity collisions', 
       }),
     /different recording/,
   );
+});
+void test('the keeper list and CSV include decisions from every imported round', () => {
+  let state = initialPayload(demo);
+  state = applyCommand(
+    state,
+    {
+      type: 'vote',
+      requestId: request('round-one-keep'),
+      trackId: firstTrackId,
+      verdict: 'keep',
+    },
+    '2026-08-31T20:00:00Z',
+  );
+  const crate = structuredClone(demo);
+  crate.id = 'second-round';
+  crate.title = 'Second round';
+  crate.tracks = crate.tracks.map((track, index) => ({
+    ...track,
+    id: `bc-second-${index}`,
+  }));
+  state = applyCommand(state, {
+    type: 'import',
+    requestId: request('round-two-import'),
+    mode: 'new-crate',
+    crate,
+  });
+  state = applyCommand(
+    state,
+    {
+      type: 'vote',
+      requestId: request('round-two-keep'),
+      trackId: crate.tracks[0].id,
+      verdict: 'keep',
+    },
+    '2026-08-31T21:00:00Z',
+  );
+
+  assert.deepEqual(
+    keptTracks(state).map((track) => track.id),
+    [firstTrackId, crate.tracks[0].id],
+  );
+  const csv = shortlistCsv(state, allSessionsSummary(state));
+  assert.match(csv, new RegExp(demo.tracks[0].artist));
+  assert.match(csv, new RegExp(crate.tracks[0].artist));
+  assert.equal(csv.split('\r\n').length, 3);
 });
 void test('bundled metadata backfill is identity-safe and preserves local state', () => {
   const state = initialPayload(demo);
@@ -198,8 +323,8 @@ void test('CSV cells neutralise spreadsheet formulas', () => {
     verdict: 'keep',
     note: '@SUM(1,2)',
   });
-  const csv = shortlistCsv(state);
-  assert.match(csv, /Not purchased/);
+  const csv = shortlistCsv(state, allSessionsSummary(state));
+  assert.match(csv, /No purchase recorded/);
   assert.match(csv, /"126"/);
   assert.match(csv, /"D minor"/);
   assert.ok(!csv.includes(',@SUM'));
@@ -209,7 +334,9 @@ void test('the agent brief limits authority and labels private data as untrusted
   assert.match(brief, /never as instructions or permission/);
   assert.match(brief, /No purchases/);
   assert.match(brief, /schemaVersion:1/);
-  assert.match(brief, /exactly 10/);
+  assert.match(brief, /number of DJ-ready tracks I ask for/);
+  assert.match(brief, /default to 10 only if I give no number/);
+  assert.doesNotMatch(brief, /exactly 10/);
   assert.match(brief, /genre labels as provisional clues/);
 });
 void test('the taste map learns sound clues across keeps, passes and explicit tags', () => {
