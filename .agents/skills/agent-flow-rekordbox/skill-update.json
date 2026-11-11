@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/EthanSK/agentic-dj",
+  "branch": "agent-flow-rekordbox-skill",
+  "path": ".agents/skills/agent-flow-rekordbox",
+  "distribution": "git-or-copy"
+}

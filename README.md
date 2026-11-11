@@ -57,6 +57,8 @@ Agentic DJ binds only to `127.0.0.1`. Do not expose it through a tunnel or deplo
 
 The app prepares an agent brief; it does not silently contact an AI service. A Keep is a listening choice, never permission to buy or change Rekordbox. Suggested set order is not a full-file beat-grid or transition check.
 
+For an explicitly requested desktop Rekordbox set, [Agent Flow Rekordbox](.agents/skills/agent-flow-rekordbox/SKILL.md) guides the current agent through creating or amending a playlist from existing local, analysed recordings. You choose and load the tracks. The skill does not add an AI service or change the listening app.
+
 ### Bring music references safely
 
 Agentic DJ deliberately has no Spotify login, Rekordbox database access, or store credentials. Your assistant can work from exports you provide or inspect a local library read-only when you explicitly permit it. Keep those inputs outside this repository.
