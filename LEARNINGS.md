@@ -6,6 +6,9 @@
 
 ## Durable implementation facts
 
+- The agent's Rekordbox catalogue is local SQLite and keyed by source library and Rekordbox UUID. Preserve first-seen history across scans, and validate against the current read-only native collection immediately before generating an import. Use Rekordbox itself to commit playlist changes.
+- Self-improved — 2026-11-12: Rekordbox folder creation and tree reordering can appear late in the window or native database. Reconcile the saved folder ID and sibling order before retrying. On 7.2.19 a single Browse layout showed the tree in Performance mode, and native drag and typed inline rename worked on the M5. See the Agent Flow Rekordbox playlist operations reference.
+
 - Bandcamp public release pages expose structured `data-tralbum` metadata with track IDs and preview availability. Read the structure, not stream URLs; a track ID is sufficient for the official embed.
 - Direct Bandcamp track pages and album pages have different price scope. Only direct-track metadata can justify `scope: track`; release-level minimums must stay labelled as release pricing.
 - Some Bandcamp artist URLs redirect to custom domains. The metadata helper deliberately rejects custom domains instead of turning a music helper into an arbitrary URL fetcher; verify those sources separately.
