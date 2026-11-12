@@ -2,6 +2,8 @@
 
 Read when using a native playlist-file import or recovering from limited UI controls. Keep normal playlist edits agent-controlled; do not bypass the application with database writes.
 
+For live requests, first use [Fast live playlist requests](live-request-speed.md) to reuse session preparation, bound selected-track checks, handle BPM requests and measure request-to-ready time.
+
 ## Native import of existing recordings
 
 1. Resolve each recording against the current Rekordbox collection and its readable local full file. Verify existing analysis. A read-only database adapter must use a read-only connection and query-only mode, not a default writable ORM session. Keep database keys and private rows out of logs and public files.
