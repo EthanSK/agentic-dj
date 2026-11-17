@@ -6,6 +6,7 @@
 
 ## Durable implementation facts
 
+- The installed Rekordbox skill and reader resolve from the primary Agentic DJ checkout. Keep the release manifest on the default branch so retiring a task checkout does not break the local install or strand published skill updates.
 - The agent's Rekordbox catalogue is local SQLite and keyed by source library and Rekordbox UUID. Preserve first-seen history across scans, and validate against the current read-only native collection immediately before generating an import. Use Rekordbox itself to commit playlist changes.
 - Self-improved — 2026-11-12: Rekordbox folder creation and tree reordering can appear late in the window or native database. Reconcile the saved folder ID and sibling order before retrying. On 7.2.19 a single Browse layout showed the tree in Performance mode, and native drag and typed inline rename worked on the M5. See the Agent Flow Rekordbox playlist operations reference.
 
