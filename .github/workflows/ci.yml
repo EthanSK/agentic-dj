@@ -25,7 +25,9 @@ jobs:
       - run: npm test
       - run: npm run typecheck
       - run: npm run build
-      - run: npm audit --omit=dev
+      - run: npx --no-install oxfmt --version
+      - run: npx --no-install shadcn --help
+      - run: npm audit
   publish:
     if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.publish_release
     needs: verify

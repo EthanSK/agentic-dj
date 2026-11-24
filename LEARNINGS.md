@@ -71,3 +71,5 @@
 - Agent metadata writes can make a listening page's revision stale. A vote can retry once against the fresh revision only when its recording identity and previous decision are unchanged; a changed decision remains a conflict.
 
 - The component generator shadcn is a development-only tool, not a production import. Keep it with other build tools. Upgrade React, vinext and its RSC peer together; resolve the existing production audit with compatible undici 7.30.2, satori 0.33.5 and fflate 0.7.5 rather than downgrading the framework or disabling its audit. Tests, type checks, production builds and the production dependency audit qualified on a hosted runner; preserve loopback binding and all private listening state when installing.
+
+- Audit the full installed dependency tree: local development servers and formatting tools can also carry vulnerable dependencies. The compatible Cloudflare Vite plugin, Wrangler and Workers types must move together; pinned minimatch and sharp patches, oxfmt 0.80.0 and smoke checks qualified with zero full-tree npm audit alerts. Keep the production and full-tree audit claims distinct.
