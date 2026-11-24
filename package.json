@@ -1,6 +1,6 @@
 {
   "name": "agentic-dj",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -18,17 +18,16 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "react-server-dom-webpack": "19.2.8",
-    "vinext": "1.0.0-beta.8",
-    "drizzle-orm": "0.45.2",
     "@base-ui/react": "1.7.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
+    "drizzle-orm": "0.45.2",
     "lucide-react": "1.31.0",
-    "shadcn": "4.18.0",
-    "tailwind-merge": "3.6.0"
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-server-dom-webpack": "19.3.1",
+    "tailwind-merge": "3.6.0",
+    "vinext": "1.4.6"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.54.2",
@@ -39,19 +38,23 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
-    "@vitejs/plugin-rsc": "0.5.34",
+    "@vitejs/plugin-rsc": "0.5.37",
+    "drizzle-kit": "0.31.10",
     "oxfmt": "0.61.0",
     "oxlint": "1.76.0",
     "oxlint-tsgolint": "7.0.2001",
+    "shadcn": "4.23.0",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
-    "vite": "8.2.2",
-    "wrangler": "4.127.1",
-    "drizzle-kit": "0.31.10"
+    "vite": "8.3.8",
+    "wrangler": "4.127.1"
   },
   "type": "module",
   "license": "LicenseRef-Ethan-No-Sale-1.0",
   "overrides": {
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "undici": "7.30.2",
+    "satori": "0.33.5",
+    "fflate": "0.7.5"
   }
 }
